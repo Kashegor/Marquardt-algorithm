@@ -1,0 +1,27 @@
+ body, html, table td, table th,input[type=text] {
+            font-size: 11pt;
+            font-family: verdana, arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 11pt;
+        }
+
+        input[type=text] {
+            padding: 5px;
+            width: 300px;
+        }
+
+        table {
+            border-collapse: collapse;
+
+        }
+
+        table td, table th {
+            padding: 5px;
+            border: 1px solid lightgray;
+        }
+
+        table th {
+            background-color: lightgray;
+        }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Minecraft algorithm</title>
+    <script src="dist/math.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML.js"></script>
+    <link rel="stylesheet" type="text/css" href="res/style.css">
+<body>
+
+<h1>
+    Майнкрафт по шагам
+</h1>
+
+<table>
+    <tr>
+        <th>f(x,y)=</th>
+        <td><input type="text" id="expr"/></td>
+    </tr>
+    <tr>
+        <th>Ваша функция</th>
+        <td>
+            <div id="pretty">$$$$</div>
+        </td>
+    </tr>
+    <tr>
+        <th>Шаг 1</th>
+        <td>
+            <div id="stepOne">$$$$</div>
+        </td>
+    </tr>
+    <!--  <tr>
+        <th>Result</th>
+        <td><div id="result"></div></td>
+      </tr>-->
+</table>
+<!--<b>Parenthesis option:</b>
+<input type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep
+<input type="radio" name="parenthesis" value="auto" onclick="parenthesis = 'auto'; expr.oninput();">auto
+<input type="radio" name="parenthesis" value="all" onclick="parenthesis = 'all'; expr.oninput();">all
+<br/>
+<b>Implicit multiplication:</b>
+<input type="radio" name="implicit" value="hide" onclick="implicit = 'hide'; expr.oninput();" checked>hide
+<input type="radio" name="implicit" value="show" onclick="implicit = 'show'; expr.oninput();">show-->
+</body>
+    <script src="res/code.js"></script>
+</html>
