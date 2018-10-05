@@ -1,5 +1,5 @@
 //readValues
-var expr = document.getElementById('expr'),
+let expr = document.getElementById('expr'),
     pretty = document.getElementById('pretty'),
     result = document.getElementById('result'),
     gesse = document.getElementById('gesse'),
@@ -8,16 +8,23 @@ var expr = document.getElementById('expr'),
     parenthesis = 'keep',
     implicit = 'hide',
     variables,
-    correctGradient;
+    correctGradient,
+    xZero = [document.getElementById('zeroX1'), document.getElementById('zeroX2')],
+    accuracy = document.getElementById('accuracy'),
+    maxIters = document.getElementById('maxIters');
 // initialize with an example expression
 //expr.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
-doMainAction('x^2+2*y^2-6x*y+5x+4');
+doMainAction('x^2+2*y^2-6x*y+5x+4', [1, 1], 0.1, 1);
 //result.innerHTML = math.format(math.eval(expr.value));
 
 //funcions
 
-function doMainAction(expression) {
+function doMainAction(expression, x0, accur, m) {
     expr.value = expression;
+    xZero[0].value = x0[0];
+    xZero[1].value = x0[1];
+    accuracy.value = accur;
+    maxIters.value = m;
     variables = getVariables();
     console.log(variables);
     setPretty(pretty, expr.value);

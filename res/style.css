@@ -9,7 +9,11 @@
 
         input[type=text] {
             padding: 5px;
+            margin: 2px;
             width: 300px;
+        }
+        input.miniInput {
+            width: 30px;
         }
 
         table {
