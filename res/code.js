@@ -4,38 +4,53 @@ let expr = document.getElementById('expr'),
     result = document.getElementById('result'),
     gesse = document.getElementById('gesse'),
     gradient1 = document.getElementById('gradient1'),
-    //gradient2 = document.getElementById('gradient2'),
+    outIteration = document.getElementById('iteration'),
+    outRegulation = document.getElementById('regulation'),
     parenthesis = 'keep',
     implicit = 'hide',
     variables,
     correctGradient,
     xZero = [document.getElementById('zeroX1'), document.getElementById('zeroX2')],
     accuracy = document.getElementById('accuracy'),
-    maxIters = document.getElementById('maxIters');
-// initialize with an example expression
+    maxIters = document.getElementById('maxIters'),
+    numberIteration= 0,
+    numberOfRegulationStrategy = 10000;
+doMainAction();
 //expr.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
-doMainAction('x^2+2*y^2-6x*y+5x+4', [1, 1], 0.1, 1);
 //result.innerHTML = math.format(math.eval(expr.value));
 
-//funcions
+//functions
 
-function doMainAction(expression, x0, accur, m) {
+function doMainAction() {
+    prepatation('x^2+2*y^2-6x*y+5x+4');
+    stepOne([0, 0], 0.1, 1);
+    stepTwo();
+
+}
+
+function prepatation(expression) {
     expr.value = expression;
+    variables = getVariables();
+    console.log(variables);
+    setPretty(pretty, expr.value);
+}
+
+function stepOne(x0, accur, m) {
     xZero[0].value = x0[0];
     xZero[1].value = x0[1];
     accuracy.value = accur;
     maxIters.value = m;
-    variables = getVariables();
-    console.log(variables);
-    setPretty(pretty, expr.value);
-    var gradient1Str = doGradient(variables[0], variables[1], 1);
-    //var gradient2Str = doGradient(variables[0], variables[1]);
+    let gradient1Str = doGradient(variables[0], variables[1], 1);
     console.log(variables[0]);
     setPretty(gradient1, gradient1Str);
-    //setPretty(gradient2, gradient2Str);
-    var matrix = doMatrix(variables[0], variables[1]);
-    //!вычислил первый шаг вроде
+    let matrix = doMatrix(variables[0], variables[1]);
     setPretty(gesse, matrix);
+}
+
+function stepTwo() {
+    outIteration.innerHTML = '$$k = ' + numberIteration + '$$';
+    outRegulation.innerHTML = '$$μk = μ0 = ' + numberOfRegulationStrategy + '$$';
+
 }
 
 function getVariables() {
@@ -49,7 +64,7 @@ function getVariables() {
 }
 
 function unique(arr) {
-    var obj = {};
+    let obj = {};
 
     for (var i = 0; i < arr.length; i++) {
         var str = arr[i];
@@ -64,15 +79,15 @@ function setPretty(element, value) {
 }
 
 function doMatrix(first, second) {
-    var peremOne = calulateDoubleDerivative(first, first);
-    var peremTwo = calulateDoubleDerivative(first, second);
-    var peremThree = calulateDoubleDerivative(second, second);
+    let peremOne = calulateDoubleDerivative(first, first);
+    let peremTwo = calulateDoubleDerivative(first, second);
+    let peremThree = calulateDoubleDerivative(second, second);
     return '[[' + peremOne + ',' + peremTwo + '], [' + peremTwo + ', ' + peremThree + ']]';
 }
 
 function doGradient(first, second, view) {
-    var peremOne = calculateDerivative(first).toString();
-    var peremTwo = calculateDerivative(second).toString();
+    let peremOne = calculateDerivative(first).toString();
+    let peremTwo = calculateDerivative(second).toString();
     correctGradient = Array(2);
     correctGradient[0] = peremOne;
     correctGradient[1] = peremTwo;
@@ -122,7 +137,7 @@ function calculateDerivative(perem) {
 }
 
 expr.oninput = function () {
-    var node = null;
+    let node = null;
 
     try {
         // parse the expression
@@ -138,11 +153,11 @@ expr.oninput = function () {
 
     try {
         // export the expression to LaTeX
-        var latex = node ? node.toTex({parenthesis: parenthesis, implicit: implicit}) : '';
+        let latex = node ? node.toTex({parenthesis: parenthesis, implicit: implicit}) : '';
         console.log('LaTeX expression:', latex);
 
         // display and re-render the expression
-        var elem = MathJax.Hub.getAllJax('pretty')[0];
+        let elem = MathJax.Hub.getAllJax('pretty')[0];
         MathJax.Hub.Queue(['Text', elem, latex]);
     }
     catch (err) {
