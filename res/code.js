@@ -6,14 +6,14 @@ let expr = document.getElementById('expr'),
     gradient1 = document.getElementById('gradient1'),
     outIteration = document.getElementById('iteration'),
     outRegulation = document.getElementById('regulation'),
+    outGradXk = document.getElementById('gradientXk'),
     parenthesis = 'keep',
     implicit = 'hide',
     variables,
-    correctGradient,
     xZero = [document.getElementById('zeroX1'), document.getElementById('zeroX2')],
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
-    numberIteration= 0,
+    numberIteration = 0,
     numberOfRegulationStrategy = 10000;
 doMainAction();
 //expr.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
@@ -22,13 +22,14 @@ doMainAction();
 //functions
 
 function doMainAction() {
-    prepatation('x^2+2*y^2-6x*y+5x+4');
-    stepOne([0, 0], 0.1, 1);
+    preparation('x^2+2*y^2-6x*y+5x+4');
+    stepOne([1, 1], 0.1, 1);
     stepTwo();
+    stepThree();
 
 }
 
-function prepatation(expression) {
+function preparation(expression) {
     expr.value = expression;
     variables = getVariables();
     console.log(variables);
@@ -50,6 +51,17 @@ function stepOne(x0, accur, m) {
 function stepTwo() {
     outIteration.innerHTML = '$$k = ' + numberIteration + '$$';
     outRegulation.innerHTML = '$$μk = μ0 = ' + numberOfRegulationStrategy + '$$';
+
+}
+
+function stepThree() {
+    let scope = {
+        x: xZero[0].value,
+        y: xZero[1].value
+    }
+    let gradientValues = doGradient(variables[0], variables[1], 0);
+    let gradXk = math.eval('sqrt(pow(' + gradientValues[0] + ',2)+pow(' + gradientValues[1] + ',2))', scope);
+    outGradXk.innerHTML =`Градиент функции в ${numberIteration}-ой точке: ` + gradXk;
 
 }
 
@@ -88,16 +100,17 @@ function doMatrix(first, second) {
 function doGradient(first, second, view) {
     let peremOne = calculateDerivative(first).toString();
     let peremTwo = calculateDerivative(second).toString();
-    correctGradient = Array(2);
-    correctGradient[0] = peremOne;
-    correctGradient[1] = peremTwo;
-    console.log(correctGradient[0]);
-    console.log(correctGradient[1]);
+    //correctGradient = Array(2);
+    // correctGradient[0] = peremOne;
+    // correctGradient[1] = peremTwo;
+    // console.log(correctGradient[0]);
+    // console.log(correctGradient[1]);
     if (view == 1) {
         return '(' + peremOne + ')*i+' + '(' + peremTwo + ')*j';
     }
     else {
-        return '[' + peremOne + ',' + peremTwo + ']';
+        console.log(Array(peremOne, peremTwo));
+        return Array(peremOne, peremTwo);
 
     }
 }
@@ -120,9 +133,7 @@ function calulateDoubleDerivative(first, second) {
         perOne: first,
         perTwo: second
     };
-    const node2 = math.parse('derivative(derivative(func, perOne), perTwo)');
-    const code2 = node2.compile();
-    return code2.eval(scope);
+    return math.eval('derivative(derivative(func, perOne), perTwo)', scope);
 }
 
 function calculateDerivative(perem) {
@@ -131,9 +142,7 @@ function calculateDerivative(perem) {
         func: expr.value,
         perem: perem,
     };
-    const node2 = math.parse('derivative(func, perem)');
-    const code2 = node2.compile();
-    return code2.eval(scope);
+    return math.eval('derivative(func, perem)', scope);
 }
 
 expr.oninput = function () {
