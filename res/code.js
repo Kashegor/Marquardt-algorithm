@@ -1,5 +1,5 @@
 //readValues
-let expr = document.getElementById('expr'),
+let exprHtml = document.getElementById('exprHtml'),
     pretty = document.getElementById('pretty'),
     result = document.getElementById('result'),
     gesse = document.getElementById('gesse'),
@@ -16,8 +16,8 @@ let expr = document.getElementById('expr'),
     numberIteration = 0,
     numberOfRegulationStrategy = 10000;
 doMainAction();
-//expr.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
-//result.innerHTML = math.format(math.eval(expr.value));
+//exprHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
+//result.innerHTML = math.format(math.eval(exprHtml.value));
 
 //functions
 
@@ -28,12 +28,12 @@ function doMainAction() {
     stepThree();
 
 }
-
+//---------------------------STEPS------------------------------
 function preparation(expression) {
-    expr.value = expression;
+    exprHtml.value = expression;
     variables = getVariables();
     console.log(variables);
-    setPretty(pretty, expr.value);
+    setPretty(pretty, exprHtml.value);
 }
 
 function stepOne(x0, accur, m) {
@@ -41,7 +41,7 @@ function stepOne(x0, accur, m) {
     xZero[1].value = x0[1];
     accuracy.value = accur;
     maxIters.value = m;
-    let gradient1Str = doGradient(variables[0], variables[1], 1);
+    let gradient1Str = doGradient(variables[0], variables[1]);
     console.log(variables[0]);
     setPretty(gradient1, gradient1Str);
     let matrix = doMatrix(variables[0], variables[1]);
@@ -51,9 +51,7 @@ function stepOne(x0, accur, m) {
 function stepTwo() {
     outIteration.innerHTML = '$$k = ' + numberIteration + '$$';
     outRegulation.innerHTML = '$$μk = μ0 = ' + numberOfRegulationStrategy + '$$';
-
 }
-
 function stepThree() {
     let scope = {
         x: xZero[0].value,
@@ -62,11 +60,10 @@ function stepThree() {
     let gradientValues = doGradient(variables[0], variables[1], 0);
     let gradXk = math.eval('sqrt(pow(' + gradientValues[0] + ',2)+pow(' + gradientValues[1] + ',2))', scope);
     outGradXk.innerHTML =`Градиент функции в ${numberIteration}-ой точке: ` + gradXk;
-
 }
-
+//----------------------------------------------------------------------
 function getVariables() {
-    var nodeExpr = math.parse(expr.value);
+    var nodeExpr = math.parse(exprHtml.value);
     console.log(nodeExpr.toString());
     var filtered = nodeExpr.filter(function (node) {
         return node.isSymbolNode
@@ -86,38 +83,15 @@ function unique(arr) {
     return Object.keys(obj); // или собрать ключи перебором для IE8-
 }
 
-function setPretty(element, value) {
-    element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
-}
-
-function doMatrix(first, second) {
-    let peremOne = calulateDoubleDerivative(first, first);
-    let peremTwo = calulateDoubleDerivative(first, second);
-    let peremThree = calulateDoubleDerivative(second, second);
-    return '[[' + peremOne + ',' + peremTwo + '], [' + peremTwo + ', ' + peremThree + ']]';
-}
-
-function doGradient(first, second, view) {
+function doGradient(first, second) {
     let peremOne = calculateDerivative(first).toString();
-    let peremTwo = calculateDerivative(second).toString();
-    //correctGradient = Array(2);
-    // correctGradient[0] = peremOne;
-    // correctGradient[1] = peremTwo;
-    // console.log(correctGradient[0]);
-    // console.log(correctGradient[1]);
-    if (view == 1) {
-        return '(' + peremOne + ')*i+' + '(' + peremTwo + ')*j';
-    }
-    else {
-        console.log(Array(peremOne, peremTwo));
-        return Array(peremOne, peremTwo);
-
-    }
+    let peremTwo = calculateDerivative(second).toString()
+    console.log(Array(peremOne, peremTwo));
+    return Array(peremOne, peremTwo); 
 }
-
 /*function calculateGrad(first, second) {
     let scope = {
-        func: expr.value,
+        func: exprHtml.value,
         firstDerivative: calculateDerivative(first),
         secondDerivative: calculateDerivative(second)
     };
@@ -129,7 +103,7 @@ function doGradient(first, second, view) {
 function calulateDoubleDerivative(first, second) {
 
     let scope = {
-        func: expr.value,
+        func: exprHtml.value,
         perOne: first,
         perTwo: second
     };
@@ -139,18 +113,32 @@ function calulateDoubleDerivative(first, second) {
 function calculateDerivative(perem) {
 
     let scope = {
-        func: expr.value,
+        func: exprHtml.value,
         perem: perem,
     };
     return math.eval('derivative(func, perem)', scope);
 }
+//-------------------------------VIEW-----------------------------------------
+function gradientToString(arrayGradient){
+    return '(' + arrayGradient[0] + ')*i+' + '(' + arrayGradient[1] + ')*j';
+}
+function setPretty(element, value) {
+    element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
+}
 
-expr.oninput = function () {
+function doMatrix(first, second) {
+    let peremOne = calulateDoubleDerivative(first, first);
+    let peremTwo = calulateDoubleDerivative(first, second);
+    let peremThree = calulateDoubleDerivative(second, second);
+    return '[[' + peremOne + ',' + peremTwo + '], [' + peremTwo + ', ' + peremThree + ']]';
+}
+//-------------------------------OUTPUT---------------------------------------
+exprHtml.oninput = function () {
     let node = null;
 
     try {
         // parse the expression
-        node = math.parse(expr.value);
+        node = math.parse(exprHtml.value);
 
         // evaluate the result of the expression
         //result.innerHTML = math.format(node.compile().eval());
