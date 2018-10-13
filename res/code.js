@@ -16,7 +16,8 @@ let exprPolynomHtml = document.getElementById('expr'),
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
     numberIteration = 0,
-    numberOfRegulationStrategy = 10000;
+    numberOfRegulationStrategy = 10000,
+    xK;
 step5Html = document.getElementById('step5');
 step6Html = document.getElementById('step6');
 step7Html = document.getElementById('step7');
@@ -24,7 +25,6 @@ step8Html = document.getElementById('step8');
 step9Html = document.getElementById('step9');
 step10Html = document.getElementById('step10');
 step11Html = document.getElementById('step11');
-
 doMainAction();
 //exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
 //result.innerHTML = math.format(math.eval(exprPolynomHtml.value));
@@ -32,7 +32,7 @@ doMainAction();
 //functions
 
 function doMainAction() {
-    preparation('x^2+2*y^5-6x*y+5x^5+4');
+    preparation('x^2+2*y^2+10x*y^2+8x');
     stepOne([1, 1], 0.1, 1);
     stepTwo();
 
@@ -59,6 +59,7 @@ function preparation(expression) {
 function stepOne(x0, accur, m) {
     xZero[0].value = x0[0];
     xZero[1].value = x0[1];
+    xK = [...x0];
     accuracy.value = accur;
     maxIters.value = m;
     let calculatedGradient = new Gradient(variables[0], variables[1]);
@@ -74,8 +75,8 @@ function stepTwo() {
 
 function stepThree() {
     let point = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
@@ -84,8 +85,8 @@ function stepThree() {
 
 function stepFour() {
     let point = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
@@ -106,8 +107,8 @@ function stepFive() {
 
 function stepSix() {
     let point = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
@@ -116,8 +117,8 @@ function stepSix() {
 
 function stepSeven() {
     let point = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
@@ -130,8 +131,8 @@ function stepSeven() {
 
 function stepEight() {
     let point = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
@@ -146,8 +147,8 @@ function stepEight() {
 
 function stepNine() {
     let point = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
@@ -168,8 +169,8 @@ function stepNine() {
 
 function stepTen(_dk) {
     let xk = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
     let xk1 = {
         x: math.eval(xk.x + math.subset(_dk, math.index(0))),
@@ -177,20 +178,23 @@ function stepTen(_dk) {
     }
     //console.log(math.subset(_dk, math.index(0)));
     setPretty(step10Html, xk1.x + "  ;  " + xk1.y);
+    console.log('xK = ' + xK.toString());
     return xk1;
 }
 
 function stepEleven(_xk1) {
     step5Html.innerHTML = 'Критерий останова : f x < f x+1 :';
     let xk = {
-        x: xZero[0].value,
-        y: xZero[1].value
+        x: xK[0],
+        y: xK[1]
     }
-    let firstExpr = math.eval(exprPolynomHtml.value.toString(), xk);
+    let firstExpr = math.eval(exprPolynomHtml.value.toString(), _xk1);
     console.log(firstExpr);
-    let secondExpr = math.eval(exprPolynomHtml.value.toString(), _xk1)
+    let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk)
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
+    xK[0] = _xk1.x;
+    xK[1] = _xk1.y;
     return sign;
 }
 
@@ -201,6 +205,7 @@ function stepTwelve() {
 }
 
 function stepThirteen() {
+    numberIteration++;
     numberOfRegulationStrategy *= 2;
     //к шагу 7
 }
@@ -209,10 +214,12 @@ function stepThirteen() {
 
 function fullRoot() {
     stepThree();
-    if (stepFour() === '<') {
+    let str1 = stepFour();
+    if (str1 === '<') {
         return;
     }
-    if (stepFive() === '>' || stepFive() === '=') {
+    let str2 = stepFive();
+    if (str2 === '>' || str2 === '=') {
         return;
     }
     stepSix();
