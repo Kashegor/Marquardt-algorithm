@@ -1,5 +1,5 @@
 //readValues
-
+math.import({eye: math.identity}, {override: true})
 let exprPolynomHtml = document.getElementById('expr'),
     prettyHtml = document.getElementById('pretty'),
     result = document.getElementById('result'),
@@ -15,15 +15,16 @@ let exprPolynomHtml = document.getElementById('expr'),
     xZero = [document.getElementById('zeroX1'), document.getElementById('zeroX2')],
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
-    step5Html = document.getElementById('step5');
-    step6Html = document.getElementById('step6');
-    step7Html = document.getElementById('step7');
-    step8Html = document.getElementById('step8');
-    step9Html = document.getElementById('step9');
-    step10Html = document.getElementById('step10');
-    step11Html = document.getElementById('step11');
     numberIteration = 0,
     numberOfRegulationStrategy = 10000;
+step5Html = document.getElementById('step5');
+step6Html = document.getElementById('step6');
+step7Html = document.getElementById('step7');
+step8Html = document.getElementById('step8');
+step9Html = document.getElementById('step9');
+step10Html = document.getElementById('step10');
+step11Html = document.getElementById('step11');
+
 doMainAction();
 //exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
 //result.innerHTML = math.format(math.eval(exprPolynomHtml.value));
@@ -35,7 +36,8 @@ function doMainAction() {
     stepOne([1, 1], 0.1, 1);
     stepTwo();
 
-    stepThree();
+    fullRoot();
+/*    stepThree();
     stepFour();
     stepFive();
     stepSix();
@@ -43,7 +45,7 @@ function doMainAction() {
     stepEight();
     let dk = stepNine();
     let dk1 = stepTen(dk);
-    stepEleven(dk1);
+    stepEleven(dk1);*/
 }
 
 //---------------------------STEPS------------------------------
@@ -111,6 +113,7 @@ function stepSix() {
     matrixGessa.setPoint(point);
     setPretty(step6Html, matrixGessa.getInPoint());
 }
+
 function stepSeven() {
     let point = {
         x: xZero[0].value,
@@ -119,12 +122,13 @@ function stepSeven() {
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
     console.log();
-    let E =math.eye(2);
-    E = math.multiply(E , numberOfRegulationStrategy);
+    let E = math.eye(2);
+    E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
     setPretty(step7Html, ansver.toString());
 }
-function stepEight(){
+
+function stepEight() {
     let point = {
         x: xZero[0].value,
         y: xZero[1].value
@@ -132,14 +136,15 @@ function stepEight(){
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
     console.log();
-    let E =math.eye(2);
-    E = math.multiply(E , numberOfRegulationStrategy);
+    let E = math.eye(2);
+    E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
     setPretty(step8Html, math.inv(ansver).toString());
-    step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver,math.inv(ansver)).toString()} `
+    step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
-function stepNine(){
+
+function stepNine() {
     let point = {
         x: xZero[0].value,
         y: xZero[1].value
@@ -147,33 +152,35 @@ function stepNine(){
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
     console.log();
-    let E =math.eye(2);
-    E = math.multiply(E , numberOfRegulationStrategy);
+    let E = math.eye(2);
+    E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
-    let dk = math.multiply(math.multiply(math.inv(ansver),-1) ,calculatedGradient.getGradientInPoint());
+    let dk = math.multiply(math.multiply(math.inv(ansver), -1), calculatedGradient.getGradientInPoint());
     console.log(calculatedGradient.getGradientInPoint().toString());
-    console.log((math.multiply(math.inv(ansver),-1).toString()));
+    console.log((math.multiply(math.inv(ansver), -1).toString()));
     console.log(dk.toString());
     setPretty(step9Html, dk.toString());
     return dk;
 }
+
 function stepTen(_dk) {
     let xk = {
         x: xZero[0].value,
         y: xZero[1].value
     }
-    let xk1 ={
-     x: math.eval( xk.x + math.subset(_dk, math.index(0))),
-     y: math.eval(xk.y + math.subset(_dk, math.index(1)))
+    let xk1 = {
+        x: math.eval(xk.x + math.subset(_dk, math.index(0))),
+        y: math.eval(xk.y + math.subset(_dk, math.index(1)))
     }
     //console.log(math.subset(_dk, math.index(0)));
-    setPretty(step10Html, xk1.x + "  ;  "+xk1.y);
+    setPretty(step10Html, xk1.x + "  ;  " + xk1.y);
     return xk1;
 }
-function stepEleven(_xk1){
+
+function stepEleven(_xk1) {
     step5Html.innerHTML = 'Критерий останова : f x < f x+1 :';
     let xk = {
         x: xZero[0].value,
@@ -182,7 +189,9 @@ function stepEleven(_xk1){
     let firstExpr = math.eval(exprPolynomHtml.value.toString(), xk);
     console.log(firstExpr);
     let secondExpr = math.eval(exprPolynomHtml.value.toString(), _xk1)
-    step11Html.innerHTML += '<br>'+ firstExpr + " " + getSignOfСomparison(firstExpr, secondExpr) + " " + secondExpr;
+    let sign = getSignOfСomparison(firstExpr, secondExpr);
+    step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
+    return sign;
 }
 
 function stepTwelve() {
@@ -213,9 +222,9 @@ function fullRoot() {
 function miniRoot() {
     stepSeven();
     stepEight();
-    stepNine();
-    stepTen();
-    if (stepEleven() === '<') {
+    let dk = stepNine();
+    let dk1 = stepTen(dk);
+    if (stepEleven(dk1) === '<') {
         stepTwelve();
         fullRoot();
     } else {
@@ -295,16 +304,16 @@ function Matrix(first, second) {
     this.peremOne = calulateDoubleDerivative(first, first);
     this.peremTwo = calulateDoubleDerivative(first, second);
     this.peremThree = calulateDoubleDerivative(second, second);
-    this.point = [[1,1],[1,1]];
+    this.point = [[1, 1], [1, 1]];
 
     this.setPoint = function (_point) {
         let gradientInPointXX = (math.eval(this.peremOne.toString(), _point)).toString();
         let gradientInPointYY = (math.eval(this.peremThree.toString(), _point).toString());
         let gradientInPointXY = (math.eval(this.peremTwo.toString(), _point).toString());
-        this.point = [[gradientInPointXX,gradientInPointXY],[gradientInPointXY, gradientInPointYY]];
+        this.point = [[gradientInPointXX, gradientInPointXY], [gradientInPointXY, gradientInPointYY]];
     }
-    this.getInPoint = function(){
-        return this.stringMatrix(this.point[0][0],this.point[0][1],this.point[1][0],this.point[1][1]);
+    this.getInPoint = function () {
+        return this.stringMatrix(this.point[0][0], this.point[0][1], this.point[1][0], this.point[1][1]);
     }
     this.getMatrix = function () {
 
