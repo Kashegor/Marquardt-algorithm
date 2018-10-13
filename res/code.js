@@ -29,6 +29,7 @@ function doMainAction() {
     preparation('x^2+2*y^5-6x*y+5x^5+4');
     stepOne([1, 1], 0.1, 1);
     stepTwo();
+
     stepThree();
     stepFour();
     stepFive();
@@ -79,12 +80,16 @@ function stepFour() {
     let gradXk = calculatedGradient.getLength().toString();
     outGradXkLength.innerHTML = `Градиент функции в ${numberIteration}-ой точке: |f(xk)| =` + gradXk;
     outGradXkLength.innerHTML += '<br> Критерий останова : |▽f(xk)| ≤ ε ';
-    outGradXkLength.innerHTML += '<br>' + gradXk + " " + getSignOfСomparison(gradXk, accuracy.value) + " " + accuracy.value;
+    let sign = getSignOfСomparison(gradXk, accuracy.value);
+    outGradXkLength.innerHTML += '<br>' + gradXk + " " + sign + " " + accuracy.value;
+    return sign;
 }
 
 function stepFive() {
     step5Html.innerHTML = 'Критерий останова :  k ≥ M ';
-    step5Html.innerHTML += '<br>' + numberIteration + " " + getSignOfСomparison(numberIteration, maxIters.value) + " " + maxIters.value;
+    let sign = getSignOfСomparison(numberIteration, maxIters.value);
+    step5Html.innerHTML += '<br>' + numberIteration + " " + sign + " " + maxIters.value;
+    return sign;
 }
 
 function stepSix() {
@@ -102,9 +107,39 @@ function stepTwelve() {
     numberOfRegulationStrategy /= 2;
     //к шагу 3
 }
+
 function stepThirteen() {
     numberOfRegulationStrategy *= 2;
     //к шагу 7
+}
+
+//------------------------------ROOTS-----------------------------------------
+
+function fullRoot() {
+    stepThree();
+    if (stepFour() === '<') {
+        return;
+    }
+    if (stepFive() === '>' || stepFive() === '=') {
+        return;
+    }
+    stepSix();
+    miniRoot();
+}
+
+function miniRoot() {
+    stepSeven();
+    stepEight();
+    stepNine();
+    stepTen();
+    if (stepEleven() === '<') {
+        stepTwelve();
+        fullRoot();
+    } else {
+        stepThirteen();
+        miniRoot();
+    }
+
 }
 
 //--------------------------CALCULATIIONS-------------------------------------
