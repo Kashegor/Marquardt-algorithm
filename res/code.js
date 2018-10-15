@@ -16,7 +16,7 @@ let exprPolynomHtml = document.getElementById('expr'),
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
     numberIteration = 0,
-    numberOfRegulationStrategy = 10000,
+    numberOfRegulationStrategy = 1,
     xK;
 step5Html = document.getElementById('step5');
 step6Html = document.getElementById('step6');
@@ -142,7 +142,7 @@ function stepEight() {
     let ansver = math.add(matrixGessa.point, E);
 
     setPretty(step8Html, math.inv(ansver).toString());
-    step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
+    //step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
 
 function stepNine() {

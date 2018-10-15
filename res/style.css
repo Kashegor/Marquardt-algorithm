@@ -29,3 +29,32 @@
         table th {
             background-color: lightgray;
         }
+        .PI_Man{
+            position: relative;
+            cursor: pointer;
+            height: 150px;
+            left: 0;
+
+            -webkit-animation: go-left-right 3s infinite alternate ,
+             infinite-spinning 3s infinite alternate  ;
+        }
+        .Blur{
+                -webkit-filter: blur(2px);
+                -moz-filter: blur(2px);
+                -o-filter: blur(2px);
+                -ms-filter: blur(2px);
+                filter: blur(2px);
+        }
+        @-webkit-keyframes go-left-right {
+            from {
+                left: 0px;
+            }
+            to {
+                left: calc(50% - 50px);
+            }
+        }
+        @-webkit-keyframes infinite-spinning {
+        100%  {
+                transform: rotateY(-180deg);
+            }
+        }
