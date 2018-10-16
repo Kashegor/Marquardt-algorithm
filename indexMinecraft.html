@@ -14,7 +14,7 @@
     Майнкрафт по шагам
 </h1>
 
-<table>
+<table id="output">
     <tr>
         <th>f(x,y)=</th>
         <td>
@@ -22,7 +22,8 @@
             <br>Начиная из точки(<input type="text" class="miniInput" id="zeroX1"/>,<input type="text" class="miniInput"
                                                                                            id="zeroX2"/>)
             <br>Точность ξ =<input type="text" class="miniInput" id="accuracy"/> M=<input type="text" class="miniInput"
-                                                                                          id="maxIters"/> <img src="content/magicStaff.svg" align="right" width="100" height="100">
+                                                                                          id="maxIters"/> <img
+                src="content/magicStaff.svg" align="right" width="100" height="100">
 
         </td>
 
@@ -49,7 +50,7 @@
             <p id="regulation"></p>
         </td>
     </tr>
-    <tr>
+<!--    <tr>
         <th>Шаг 3</th>
         <td>
             <div id="gradientXk">$$$$</div>
@@ -60,15 +61,15 @@
         <td>
             <div id="gradie">$$$$</div>
         </td>
-    </tr>
-    <tr>
+    </tr>-->
+<!--    <tr>
         <th>Шаг 5</th>
         <td>
             <div id="step5">$$$$</div>
         </td>
     </tr>
-    <tr>
-        <th>Шаг 6</th>
+    <tr>-->
+<!--        <th>Шаг 6</th>
         <td>
             <div id="step6">$$$$</div>
         </td>
@@ -102,11 +103,12 @@
         <td>
             <div id="step11">$$$$</div>
         </td>
-    </tr>
-    <!--  <tr>
-        <th>Result</th>
-        <td><div id="result"></div></td>
-      </tr>-->
+    </tr>-->
+
+        <!--  <tr>
+            <th>Result</th>
+            <td><div id="result"></div></td>
+          </tr>-->
 </table>
 <!--<b>Parenthesis option:</b>
 <input type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep
@@ -116,6 +118,6 @@
 <b>Implicit multiplication:</b>
 <input type="radio" name="implicit" value="hide" onclick="implicit = 'hide'; expr.oninput();" checked>hide
 <input type="radio" name="implicit" value="show" onclick="implicit = 'show'; expr.oninput();">show-->
- <div align="left"><img src="content/Chel.svg" width="200" height="200"></div>
+<div align="left"><img src="content/Chel.svg" width="200" height="200"></div>
 </body>
 </html>

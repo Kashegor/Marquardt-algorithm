@@ -20,7 +20,9 @@
             border-collapse: collapse;
 
         }
-
+        .iter {
+            width: 300px;
+        }
         table td, table th {
             padding: 5px;
             border: 1px solid lightgray;

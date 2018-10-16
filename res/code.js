@@ -7,8 +7,6 @@ let exprPolynomHtml = document.getElementById('expr'),
     gradient1Html = document.getElementById('gradient1'),
     outIteration = document.getElementById('iteration'),
     outRegulation = document.getElementById('regulation'),
-    outGradXk = document.getElementById('gradientXk'),
-    outGradXkLength = document.getElementById('gradie'),
     parenthesis = 'keep',
     implicit = 'hide',
     variables,
@@ -16,15 +14,11 @@ let exprPolynomHtml = document.getElementById('expr'),
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
     numberIteration = 0,
-    numberOfRegulationStrategy = 10000,
+    numberOfRegulationStrategy = 1,
     xK;
-step5Html = document.getElementById('step5');
-step6Html = document.getElementById('step6');
-step7Html = document.getElementById('step7');
-step8Html = document.getElementById('step8');
-step9Html = document.getElementById('step9');
-step10Html = document.getElementById('step10');
-step11Html = document.getElementById('step11');
+
+//Всё идёт сюда
+output = document.getElementById('output');
 doMainAction();
 //exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
 //result.innerHTML = math.format(math.eval(exprPolynomHtml.value));
@@ -33,19 +27,11 @@ doMainAction();
 
 function doMainAction() {
     preparation('x^2+2*y^2+10x*y^2+8x');
-    stepOne([1, 1], 0.1, 1);
+    stepOne([1, 1], 0.1, 6);
     stepTwo();
-
     fullRoot();
-/*    stepThree();
-    stepFour();
-    stepFive();
-    stepSix();
-    stepSeven();
-    stepEight();
-    let dk = stepNine();
-    let dk1 = stepTen(dk);
-    stepEleven(dk1);*/
+    output.insertAdjacentHTML('afterEnd', `<br>xK = ${xK.toString()}`);
+
 }
 
 //---------------------------STEPS------------------------------
@@ -80,7 +66,7 @@ function stepThree() {
     }
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
-    outGradXk.innerHTML = `Градиент функции в ${numberIteration}-ой точке: f(xk) = ` + pointToString(calculatedGradient.getGradientInPoint());
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 3</th><td><div>Градиент функции в ${numberIteration}-ой точке: f(xk) = ${pointToString(calculatedGradient.getGradientInPoint())}</div></td></tr>`);
 }
 
 function stepFour() {
@@ -91,17 +77,18 @@ function stepFour() {
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
     let gradXk = calculatedGradient.getLength().toString();
-    outGradXkLength.innerHTML = `Градиент функции в ${numberIteration}-ой точке: |f(xk)| =` + gradXk;
-    outGradXkLength.innerHTML += '<br> Критерий останова : |▽f(xk)| ≤ ε ';
     let sign = getSignOfСomparison(gradXk, accuracy.value);
-    outGradXkLength.innerHTML += '<br>' + gradXk + " " + sign + " " + accuracy.value;
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 4</th><td><div>Градиент функции в ${numberIteration}-ой точке: 
+|f(xk)| = ${gradXk}<br> Критерий останова : |▽f(xk)| ≤ ε <br>  ${gradXk} ${sign} ${accuracy.value}</div></td></tr>`);
     return sign;
 }
 
 function stepFive() {
-    step5Html.innerHTML = 'Критерий останова :  k ≥ M ';
     let sign = getSignOfСomparison(numberIteration, maxIters.value);
-    step5Html.innerHTML += '<br>' + numberIteration + " " + sign + " " + maxIters.value;
+    /*    step5Html.innerHTML = 'Критерий останова :  k ≥ M ';
+        step5Html.innerHTML += '<br>' + numberIteration + " " + sign + " " + maxIters.value;*/
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 5</th><td><div>Критерий останова :  k ≥ M
+<br> ${numberIteration} ${sign} ${maxIters.value}</div></td></tr>`);
     return sign;
 }
 
@@ -112,7 +99,7 @@ function stepSix() {
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
-    setPretty(step6Html, matrixGessa.getInPoint());
+    setPrettyTr('Шаг 6', matrixGessa.getInPoint());
 }
 
 function stepSeven() {
@@ -126,7 +113,7 @@ function stepSeven() {
     let E = math.eye(2);
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
-    setPretty(step7Html, ansver.toString());
+    setPrettyTr('Шаг 7', ansver.toString());
 }
 
 function stepEight() {
@@ -141,8 +128,8 @@ function stepEight() {
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
-    setPretty(step8Html, math.inv(ansver).toString());
-    step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
+    setPrettyTr('Шаг 8', math.inv(ansver).toString());
+    //step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
 
 function stepNine() {
@@ -163,7 +150,7 @@ function stepNine() {
     console.log(calculatedGradient.getGradientInPoint().toString());
     console.log((math.multiply(math.inv(ansver), -1).toString()));
     console.log(dk.toString());
-    setPretty(step9Html, dk.toString());
+    setPrettyTr('Шаг 9', dk.toString());
     return dk;
 }
 
@@ -177,13 +164,12 @@ function stepTen(_dk) {
         y: math.eval(xk.y + math.subset(_dk, math.index(1)))
     }
     //console.log(math.subset(_dk, math.index(0)));
-    setPretty(step10Html, xk1.x + "  ;  " + xk1.y);
-    console.log('xK = ' + xK.toString());
+    setPrettyTr('Шаг 10', xk1.x + "  ;  " + xk1.y);
     return xk1;
 }
 
 function stepEleven(_xk1) {
-    step5Html.innerHTML = 'Критерий останова : f x < f x+1 :';
+    //step5Html.innerHTML = 'Критерий останова : f x < f x+1 :';
     let xk = {
         x: xK[0],
         y: xK[1]
@@ -192,27 +178,32 @@ function stepEleven(_xk1) {
     console.log(firstExpr);
     let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk)
     let sign = getSignOfСomparison(firstExpr, secondExpr);
-    step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
+    //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 11</th><td><div>${firstExpr} ${sign} ${secondExpr}</div></td></tr>`);
     xK[0] = _xk1.x;
     xK[1] = _xk1.y;
+    console.log('xK = ' + xK.toString());
     return sign;
 }
 
 function stepTwelve() {
     numberIteration++;
     numberOfRegulationStrategy /= 2;
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 12</th><td><div>Делим мю на 2, мю = ${numberOfRegulationStrategy}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`);
     //к шагу 3
 }
 
 function stepThirteen() {
-    numberIteration++;
     numberOfRegulationStrategy *= 2;
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 13</th><td><div>Умножаем мю на 2, мю = ${numberOfRegulationStrategy}<br>Возвращаемся к шагу 7</div></td></tr>`);
     //к шагу 7
 }
 
 //------------------------------ROOTS-----------------------------------------
 
 function fullRoot() {
+    //вывод k итерации будет здесь
+    output.insertAdjacentHTML('beforeEnd', `<tr class="iter">Итерация ${numberIteration}</tr>`);
     stepThree();
     let str1 = stepFour();
     if (str1 === '<') {
@@ -241,12 +232,12 @@ function miniRoot() {
 
 }
 
-//--------------------------CALCULATIIONS-------------------------------------
+//--------------------------CALCULATIONS-------------------------------------
 
 function getVariablesFromPolynom(expression) {
-    var nodeExpr = math.parse(expression);
+    let nodeExpr = math.parse(expression);
     console.log(nodeExpr.toString());
-    var filtered = nodeExpr.filter(function (node) {
+    let filtered = nodeExpr.filter(function (node) {
         return node.isSymbolNode
     });
     filtered = unique(filtered);
@@ -256,8 +247,8 @@ function getVariablesFromPolynom(expression) {
 function unique(arr) {
     let obj = {};
 
-    for (var i = 0; i < arr.length; i++) {
-        var str = arr[i];
+    for (let i = 0; i < arr.length; i++) {
+        let str = arr[i];
         obj[str] = true; // запомнить строку в виде свойства объекта
     }
 
@@ -334,6 +325,14 @@ function Matrix(first, second) {
 //-------------------------------VIEW-----------------------------------------
 function setPretty(element, value) {
     element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
+    //output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 5</th><td><div>$$ ${math.parse(value).toTex({parenthesis: parenthesis})}
+//$$</div></td></tr>`);
+}
+
+function setPrettyTr(name, value) {
+    //element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
+    output.insertAdjacentHTML('beforeEnd', `<tr><th>${name}</th><td><div>$$ ${math.parse(value).toTex({parenthesis: parenthesis})}
+$$</div></td></tr>`);
 }
 
 function pointToString(coordinates) {
