@@ -1,33 +1,48 @@
- body, html, table td, table th,input[type=text] {
-            font-size: 11pt;
-            font-family: verdana, arial, sans-serif;
-        }
+section {
+    background: url(../content/e6497d70dd5a.jpg);
+}
+body, html, table td, table th, input[type=text] {
+    font-size: 11pt;
+    font-family: verdana, arial, sans-serif;
+}
 
-        h1 {
-            font-size: 11pt;
-        }
+h1 {
+    font-size: 11pt;
+}
 
-        input[type=text] {
-            padding: 5px;
-            margin: 2px;
-            width: 300px;
-        }
-        input.miniInput {
-            width: 30px;
-        }
+input[type=text] {
+    padding: 5px;
+    margin: 2px;
+    width: 300px;
+}
 
-        table {
-            border-collapse: collapse;
+input.miniInput {
+    width: 30px;
+}
 
-        }
-        .iter {
-            width: 300px;
-        }
-        table td, table th {
-            padding: 5px;
-            border: 1px solid lightgray;
-        }
+table {
+    border-collapse: collapse;
 
-        table th {
-            background-color: lightgray;
-        }
+}
+
+.iter {
+    width: 300px;
+    padding: 20px;
+}
+
+table td, table th {
+    padding: 5px;
+    border: 1px solid lightgray;
+    margin: 10px;
+}
+
+table th {
+    background-color: lightgray;
+}
+
+.container {
+    width: 880px;
+    margin: 0 auto;
+    background-color: aliceblue;
+    padding-left: 25px;
+}

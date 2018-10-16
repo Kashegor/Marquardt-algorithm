@@ -9,115 +9,62 @@
     <link rel="stylesheet" type="text/css" href="res/style.css">
     <link rel="SHORTCUT ICON" href="content/sword.png" type="image/x-icon">
 <body>
+<section>
+    <div class="container">
+        <h1>
+            Майнкрафт по шагам
+        </h1>
 
-<h1>
-    Майнкрафт по шагам
-</h1>
+        <table id="output">
+            <tr>
+                <th>f(x,y)=</th>
+                <td>
+                    <input type="text" id="expr"/>
+                    <br>Начиная из точки(<input type="text" class="miniInput" id="zeroX1"/>,<input type="text"
+                                                                                                   class="miniInput"
+                                                                                                   id="zeroX2"/>)
+                    <br>Точность ξ =<input type="text" class="miniInput" id="accuracy"/> M=<input type="text"
+                                                                                                  class="miniInput"
+                                                                                                  id="maxIters"/> <img
+                        src="content/magicStaff.svg" align="right" width="100" height="100">
 
-<table id="output">
-    <tr>
-        <th>f(x,y)=</th>
-        <td>
-            <input type="text" id="expr"/>
-            <br>Начиная из точки(<input type="text" class="miniInput" id="zeroX1"/>,<input type="text" class="miniInput"
-                                                                                           id="zeroX2"/>)
-            <br>Точность ξ =<input type="text" class="miniInput" id="accuracy"/> M=<input type="text" class="miniInput"
-                                                                                          id="maxIters"/> <img
-                src="content/magicStaff.svg" align="right" width="100" height="100">
+                </td>
 
-        </td>
+            </tr>
+            <tr>
+                <th>Ваша функция</th>
+                <td>
+                    <div id="pretty">$$$$</div>
+                </td>
+            </tr>
+            <tr>
+                <th>Шаг 1</th>
+                <td>
+                    <p>Градиент</p>
+                    <div id="gradient1">$$$$</div>
+                    <p>Матрица Гессе</p>
+                    <div id="gesse">$$$$</div>
+                </td>
+            </tr>
+            <tr>
+                <th>Шаг 2</th>
+                <td>
+                    <p id="iteration"></p>
+                    <p id="regulation"></p>
+                </td>
+            </tr>
+        </table>
 
-    </tr>
-    <tr>
-        <th>Ваша функция</th>
-        <td>
-            <div id="pretty">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 1</th>
-        <td>
-            <p>Градиент</p>
-            <div id="gradient1">$$$$</div>
-            <p>Матрица Гессе</p>
-            <div id="gesse">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 2</th>
-        <td>
-            <p id="iteration"></p>
-            <p id="regulation"></p>
-        </td>
-    </tr>
-<!--    <tr>
-        <th>Шаг 3</th>
-        <td>
-            <div id="gradientXk">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 4</th>
-        <td>
-            <div id="gradie">$$$$</div>
-        </td>
-    </tr>-->
-<!--    <tr>
-        <th>Шаг 5</th>
-        <td>
-            <div id="step5">$$$$</div>
-        </td>
-    </tr>
-    <tr>-->
-<!--        <th>Шаг 6</th>
-        <td>
-            <div id="step6">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 7</th>
-        <td>
-            <div id="step7">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 8</th>
-        <td>
-            <div id="step8">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 9</th>
-        <td>
-            <div id="step9">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 10</th>
-        <td>
-            <div id="step10">$$$$</div>
-        </td>
-    </tr>
-    <tr>
-        <th>Шаг 11</th>
-        <td>
-            <div id="step11">$$$$</div>
-        </td>
-    </tr>-->
-
-        <!--  <tr>
-            <th>Result</th>
-            <td><div id="result"></div></td>
-          </tr>-->
-</table>
-<!--<b>Parenthesis option:</b>
-<input type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep
-<input type="radio" name="parenthesis" value="auto" onclick="parenthesis = 'auto'; expr.oninput();">auto
-<input type="radio" name="parenthesis" value="all" onclick="parenthesis = 'all'; expr.oninput();">all
-<br/>
-<b>Implicit multiplication:</b>
-<input type="radio" name="implicit" value="hide" onclick="implicit = 'hide'; expr.oninput();" checked>hide
-<input type="radio" name="implicit" value="show" onclick="implicit = 'show'; expr.oninput();">show-->
-<div align="left"><img src="content/Chel.svg" width="200" height="200"></div>
+        <!--<b>Parenthesis option:</b>
+        <input type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep
+        <input type="radio" name="parenthesis" value="auto" onclick="parenthesis = 'auto'; expr.oninput();">auto
+        <input type="radio" name="parenthesis" value="all" onclick="parenthesis = 'all'; expr.oninput();">all
+        <br/>
+        <b>Implicit multiplication:</b>
+        <input type="radio" name="implicit" value="hide" onclick="implicit = 'hide'; expr.oninput();" checked>hide
+        <input type="radio" name="implicit" value="show" onclick="implicit = 'show'; expr.oninput();">show-->
+        <div align="left"><img src="content/Chel.svg" width="200" height="200"></div>
+    </div>
+</section>
 </body>
 </html>
