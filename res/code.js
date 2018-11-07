@@ -15,10 +15,11 @@ let exprPolynomHtml = document.getElementById('expr'),
     maxIters = document.getElementById('maxIters'),
     numberIteration = 0,
     numberOfRegulationStrategy = 1,
-    xK;
-
+    xK,
+    stepsHtml = [];
 //Всё идёт сюда
 output = document.getElementById('output');
+let currentStepHtml;
 doMainAction();
 //exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
 //result.innerHTML = math.format(math.eval(exprPolynomHtml.value));
@@ -30,7 +31,13 @@ function doMainAction() {
     stepOne([1, 1], 0.1, 6);
     stepTwo();
     fullRoot();
-    output.insertAdjacentHTML('afterEnd', `<br>xK = ${xK.toString()}`);
+    //////for (let i = 0; i < stepsHtml.length; i++) {
+    //////    output.innerHTML += stepsHtml[i];
+    //////}
+    output.innerHTML += stepsHtml[0];
+    output.innerHTML += stepsHtml[stepsHtml.length - 2];
+    output.innerHTML += stepsHtml[stepsHtml.length-1];
+    output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
 
 }
 
@@ -66,7 +73,7 @@ function stepThree() {
     }
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 3</th><td><div>Градиент функции в ${numberIteration}-ой точке: f(xk) = ${pointToString(calculatedGradient.getGradientInPoint())}</div></td></tr>`);
+    currentStepHtml += `<tr><th>Шаг 3</th><td><div>Градиент функции в ${numberIteration}-ой точке: f(xk) = ${pointToString(calculatedGradient.getGradientInPoint())}</div></td></tr>`;
 }
 
 function stepFour() {
@@ -78,8 +85,8 @@ function stepFour() {
     calculatedGradient.setGradientInPoint(point);
     let gradXk = calculatedGradient.getLength().toString();
     let sign = getSignOfСomparison(gradXk, accuracy.value);
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 4</th><td><div>Градиент функции в ${numberIteration}-ой точке: 
-|f(xk)| = ${gradXk}<br> Критерий останова : |▽f(xk)| ≤ ε <br>  ${gradXk} ${sign} ${accuracy.value}</div></td></tr>`);
+    currentStepHtml += `<tr><th>Шаг 4</th><td><div>Градиент функции в ${numberIteration}-ой точке: 
+|f(xk)| = ${gradXk}<br> Критерий останова : |▽f(xk)| ≤ ε <br>  ${gradXk} ${sign} ${accuracy.value}</div></td></tr>`;
     return sign;
 }
 
@@ -87,8 +94,7 @@ function stepFive() {
     let sign = getSignOfСomparison(numberIteration, maxIters.value);
     /*    step5Html.innerHTML = 'Критерий останова :  k ≥ M ';
         step5Html.innerHTML += '<br>' + numberIteration + " " + sign + " " + maxIters.value;*/
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 5</th><td><div>Критерий останова :  k ≥ M
-<br> ${numberIteration} ${sign} ${maxIters.value}</div></td></tr>`);
+    currentStepHtml += `<tr><th>Шаг 5</th><td><div>Критерий останова :  k ≥ M<br> ${numberIteration} ${sign} ${maxIters.value}</div></td></tr>`;
     return sign;
 }
 
@@ -128,7 +134,7 @@ function stepEight() {
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
-    setPrettyTr('Шаг 8', math.inv(ansver).toString());
+    setPrettyTr('Шаг 8', math.format(math.inv(ansver),{notation: 'fixed', precision: 3}).toString());
     //step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
 
@@ -147,10 +153,7 @@ function stepNine() {
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
     let dk = math.multiply(math.multiply(math.inv(ansver), -1), calculatedGradient.getGradientInPoint());
-    console.log(calculatedGradient.getGradientInPoint().toString());
-    console.log((math.multiply(math.inv(ansver), -1).toString()));
-    console.log(dk.toString());
-    setPrettyTr('Шаг 9', dk.toString());
+    setPrettyTr('Шаг 9', math.format(dk,{notation: 'fixed', precision: 3}).toString());
     return dk;
 }
 
@@ -164,7 +167,7 @@ function stepTen(_dk) {
         y: math.eval(xk.y + math.subset(_dk, math.index(1)))
     }
     //console.log(math.subset(_dk, math.index(0)));
-    setPrettyTr('Шаг 10', xk1.x + "  ;  " + xk1.y);
+    setPrettyTr('Шаг 10', math.format(xk1.x,{notation: 'fixed', precision: 3}) + "  ;  " + math.format(xk1.y,{notation: 'fixed', precision: 3}));
     return xk1;
 }
 
@@ -179,7 +182,7 @@ function stepEleven(_xk1) {
     let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk)
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 11</th><td><div>${firstExpr} ${sign} ${secondExpr}</div></td></tr>`);
+    currentStepHtml += `<tr><th>Шаг 11</th><td><div>${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}</div></td></tr>`;
     xK[0] = _xk1.x;
     xK[1] = _xk1.y;
     console.log('xK = ' + xK.toString());
@@ -189,13 +192,13 @@ function stepEleven(_xk1) {
 function stepTwelve() {
     numberIteration++;
     numberOfRegulationStrategy /= 2;
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 12</th><td><div>Делим мю на 2, мю = ${numberOfRegulationStrategy}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`);
+    currentStepHtml += `<tr><th>Шаг 12</th><td><div>Делим мю на 2, мю = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`;
     //к шагу 3
 }
 
 function stepThirteen() {
     numberOfRegulationStrategy *= 2;
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>Шаг 13</th><td><div>Умножаем мю на 2, мю = ${numberOfRegulationStrategy}<br>Возвращаемся к шагу 7</div></td></tr>`);
+    currentStepHtml += `<tr><th>Шаг 13</th><td><div>Умножаем мю на 2, мю = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>Возвращаемся к шагу 7</div></td></tr>`;
     //к шагу 7
 }
 
@@ -203,14 +206,16 @@ function stepThirteen() {
 
 function fullRoot() {
     //вывод k итерации будет здесь
-    output.insertAdjacentHTML('beforeEnd', `<tr class="iter">Итерация ${numberIteration}</tr>`);
+    currentStepHtml = `<tr class="iter">k = ${numberIteration}</tr>`;
     stepThree();
     let str1 = stepFour();
     if (str1 === '<') {
+        stepsHtml.push(currentStepHtml);
         return;
     }
     let str2 = stepFive();
     if (str2 === '>' || str2 === '=') {
+        stepsHtml.push(currentStepHtml);
         return;
     }
     stepSix();
@@ -224,6 +229,10 @@ function miniRoot() {
     let dk1 = stepTen(dk);
     if (stepEleven(dk1) === '<') {
         stepTwelve();
+        //
+
+        stepsHtml.push(currentStepHtml);
+        //output.innerHTML += currentStepHtml;
         fullRoot();
     } else {
         stepThirteen();
@@ -286,15 +295,15 @@ function Gradient(_first, _second) {
         return '(' + this.first.toString() + ')*i+' + '(' + this.second.toString() + ')*j';
     }
     this.setGradientInPoint = function (_point) {
-        let gradientInPointX = (math.eval(this.first.toString(), _point)).toString();
-        let gradientInPointY = (math.eval(this.second.toString(), _point).toString());
+        let gradientInPointX = math.format((math.eval(this.first.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
+        let gradientInPointY =  math.format((math.eval(this.second.toString(), _point)),{notation: 'fixed', precision: 2}).toString();
         this.point = [gradientInPointX, gradientInPointY];
     }
     this.getGradientInPoint = function () {
         return this.point;
     }
     this.getLength = function () {
-        return math.eval('sqrt(pow(' + this.point[0] + ',2)+pow(' + this.point[1] + ',2))')
+        return math.format(math.eval('sqrt(pow(' + this.point[0] + ',2)+pow(' + this.point[1] + ',2))'),{notation: 'fixed', precision: 2});
     }
 }
 
@@ -305,9 +314,9 @@ function Matrix(first, second) {
     this.point = [[1, 1], [1, 1]];
 
     this.setPoint = function (_point) {
-        let gradientInPointXX = (math.eval(this.peremOne.toString(), _point)).toString();
-        let gradientInPointYY = (math.eval(this.peremThree.toString(), _point).toString());
-        let gradientInPointXY = (math.eval(this.peremTwo.toString(), _point).toString());
+        let gradientInPointXX = math.format((math.eval(this.peremOne.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
+        let gradientInPointYY = math.format((math.eval(this.peremTwo.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
+        let gradientInPointXY = math.format((math.eval(this.peremThree.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
         this.point = [[gradientInPointXX, gradientInPointXY], [gradientInPointXY, gradientInPointYY]];
     }
     this.getInPoint = function () {
@@ -329,10 +338,9 @@ function setPretty(element, value) {
 //$$</div></td></tr>`);
 }
 
-function setPrettyTr(name, value) {
+function setPrettyTr(name, value, messageBefore, messageAfter) {
     //element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
-    output.insertAdjacentHTML('beforeEnd', `<tr><th>${name}</th><td><div>$$ ${math.parse(value).toTex({parenthesis: parenthesis})}
-$$</div></td></tr>`);
+    currentStepHtml += `<tr><th>${name}</th><td><div>$$ ${messageBefore} ${math.parse(value).toTex({parenthesis: parenthesis})} ${messageAfter} $$</div></td></tr>`;
 }
 
 function pointToString(coordinates) {
