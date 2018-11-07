@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -8,14 +8,15 @@
     <script src="res/code.js" defer></script>
     <link rel="stylesheet" type="text/css" href="res/style.css">
     <link rel="SHORTCUT ICON" href="content/sword.png" type="image/x-icon">
+</head>
+
 <body>
 <div><img src="content/Run.svg" class="PI_Man" onclick="this.style.left='450px'"></div>
 <h1>
     Майнкрафт по шагам
 
 </h1>
-
-<table>
+<table id="output">
     <tr>
         <th>f(x,y)=</th>
         <td>
@@ -23,7 +24,8 @@
             <br>Начиная из точки(<input type="text" class="miniInput" id="zeroX1"/>,<input type="text" class="miniInput"
                                                                                            id="zeroX2"/>)
             <br>Точность ξ =<input type="text" class="miniInput" id="accuracy"/> M=<input type="text" class="miniInput"
-                                                                                          id="maxIters"/> <img src="content/magicStaff.svg" align="right" width="100" height="100">
+                                                                                          id="maxIters"/> <img
+                src="content/magicStaff.svg" align="right" width="100" height="100">
 
         </td>
 
@@ -50,7 +52,8 @@
             <p id="regulation"></p>
         </td>
     </tr>
-    <tr>
+    
+<!--    <tr>
         <th>Шаг 3</th>
         <td>
             <div id="gradientXk">$$$$</div>
@@ -61,15 +64,15 @@
         <td>
             <div id="gradie">$$$$</div>
         </td>
-    </tr>
-    <tr>
+    </tr>-->
+<!--    <tr>
         <th>Шаг 5</th>
         <td>
             <div id="step5">$$$$</div>
         </td>
     </tr>
-    <tr>
-        <th>Шаг 6</th>
+    <tr>-->
+<!--        <th>Шаг 6</th>
         <td>
             <div id="step6">$$$$</div>
         </td>
@@ -103,11 +106,12 @@
         <td>
             <div id="step11">$$$$</div>
         </td>
-    </tr>
-    <!--  <tr>
-        <th>Result</th>
-        <td><div id="result"></div></td>
-      </tr>-->
+    </tr>-->
+
+        <!--  <tr>
+            <th>Result</th>
+            <td><div id="result"></div></td>
+          </tr>-->
 </table>
 <!--<b>Parenthesis option:</b>
 <input type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep

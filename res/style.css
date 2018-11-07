@@ -20,7 +20,9 @@
             border-collapse: collapse;
 
         }
-
+        .iter {
+            width: 300px;
+        }
         table td, table th {
             padding: 5px;
             border: 1px solid lightgray;
@@ -35,13 +37,12 @@
             height: 150px;
             left: 0;
 
-            -webkit-animation: go-left-right 3s infinite alternate ,
-             infinite-spinning 3s infinite alternate  ;
+            -webkit-animation: go-left-right 3s infinite normal ,
+             infinite-spinning 3s infinite normal  ;
         }
         .Blur{
                 -webkit-filter: blur(2px);
                 -moz-filter: blur(2px);
-                -o-filter: blur(2px);
                 -ms-filter: blur(2px);
                 filter: blur(2px);
         }
@@ -50,7 +51,7 @@
                 left: 0px;
             }
             to {
-                left: calc(50% - 50px);
+                left: calc(50%);
             }
         }
         @-webkit-keyframes infinite-spinning {
