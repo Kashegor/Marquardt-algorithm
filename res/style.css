@@ -29,6 +29,10 @@ table {
     width: 300px;
     padding: 20px;
 }
+.iter th {
+    column-span: 2;
+    background-color: dodgerblue;
+}
 
 table td, table th {
     padding: 5px;
