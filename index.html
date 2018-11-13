@@ -20,12 +20,16 @@
                 <th>f(x,y)=</th>
                 <td>
                     <input type="text" id="expr"/>
+                    <input type="button" value="Ok" id="ok"/>
                     <br>Начиная из точки(<input type="text" class="miniInput" id="zeroX1"/>,<input type="text"
                                                                                                    class="miniInput"
                                                                                                    id="zeroX2"/>)
-                    <br>Точность ξ =<input type="text" class="miniInput" id="accuracy"/> M=<input type="text"
-                                                                                                  class="miniInput"
-                                                                                                  id="maxIters"/> 
+                    <br>Точность ξ =<input type="text" class="miniInput" id="accuracy"/>Максимальное число итераций
+                    M=<input type="text"
+                             class="miniInput"
+                             id="maxIters"/>
+                    <br>Число, регулирующее стратегию поиска, μ0 =<input type="text" class="miniInput"
+                                                                               id="strategy"/>
                     <img src="content/magicStaff.svg" align="right" width="100" height="100">
 
                 </td>
