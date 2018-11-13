@@ -27,14 +27,16 @@ doMainAction();
 //functions
 
 function doMainAction() {
-    preparation('x^2+2*y^2+10x*y^2+8x');
-    stepOne([1, 1], 0.1, 6);
+    preparation("x^2+2*y^2+10x*y^2+8x");
+    stepOne([1, 1], 0.1, 10);
     stepTwo();
     fullRoot();
     //////for (let i = 0; i < stepsHtml.length; i++) {
     //////    output.innerHTML += stepsHtml[i];
     //////}
     output.innerHTML += stepsHtml[0];
+    output.innerHTML += stepsHtml[1];
+    output.innerHTML += stepsHtml[2];
     output.innerHTML += stepsHtml[stepsHtml.length - 2];
     output.innerHTML += stepsHtml[stepsHtml.length-1];
     output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
@@ -85,8 +87,7 @@ function stepFour() {
     calculatedGradient.setGradientInPoint(point);
     let gradXk = calculatedGradient.getLength().toString();
     let sign = getSignOfСomparison(gradXk, accuracy.value);
-    currentStepHtml += `<tr><th>Шаг 4</th><td><div>Градиент функции в ${numberIteration}-ой точке: 
-|f(xk)| = ${gradXk}<br> Критерий останова : |▽f(xk)| ≤ ε <br>  ${gradXk} ${sign} ${accuracy.value}</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 4</th><td><div>|f(xk)| = ${gradXk}<br> Критерий останова : |▽f(xk)| ≤ ε <br>  ${gradXk} ${sign} ${accuracy.value}</div></td></tr>`;
     return sign;
 }
 
@@ -105,7 +106,7 @@ function stepSix() {
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
-    setPrettyTr('Шаг 6', matrixGessa.getInPoint());
+    setPrettyTr('Шаг 6', matrixGessa.getInPoint(), `$$Матрица Гессе:$$ H(x^${numberIteration}) = `, '');
 }
 
 function stepSeven() {
@@ -119,7 +120,7 @@ function stepSeven() {
     let E = math.eye(2);
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
-    setPrettyTr('Шаг 7', ansver.toString());
+    setPrettyTr('Шаг 7', ansver.toString(), `H(x^${numberIteration}) + μ^${numberIteration} * E =`, '');
 }
 
 function stepEight() {
@@ -134,7 +135,7 @@ function stepEight() {
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
-    setPrettyTr('Шаг 8', math.format(math.inv(ansver),{notation: 'fixed', precision: 3}).toString());
+    setPrettyTr('Шаг 8', math.format(math.inv(ansver),{notation: 'fixed', precision: 3}).toString(), `[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} =`, '');
     //step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
 
@@ -153,7 +154,7 @@ function stepNine() {
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
     let dk = math.multiply(math.multiply(math.inv(ansver), -1), calculatedGradient.getGradientInPoint());
-    setPrettyTr('Шаг 9', math.format(dk,{notation: 'fixed', precision: 3}).toString());
+    setPrettyTr('Шаг 9', math.format(dk,{notation: 'fixed', precision: 3}).toString(), `$$Направление спуска: $$[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} * ▽f(x^${numberIteration})=`, '');
     return dk;
 }
 
@@ -167,7 +168,7 @@ function stepTen(_dk) {
         y: math.eval(xk.y + math.subset(_dk, math.index(1)))
     }
     //console.log(math.subset(_dk, math.index(0)));
-    setPrettyTr('Шаг 10', math.format(xk1.x,{notation: 'fixed', precision: 3}) + "  ;  " + math.format(xk1.y,{notation: 'fixed', precision: 3}));
+    setPrettyTr('Шаг 10', math.format(xk1.x,{notation: 'fixed', precision: 3}) + "; " + math.format(xk1.y,{notation: 'fixed', precision: 3}), 'x : ', '');
     return xk1;
 }
 
@@ -182,7 +183,7 @@ function stepEleven(_xk1) {
     let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk)
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
-    currentStepHtml += `<tr><th>Шаг 11</th><td><div>${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 11</th><td><div>$$f(x^{k+1}) < f(x^k)$$ ${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}</div></td></tr>`;
     xK[0] = _xk1.x;
     xK[1] = _xk1.y;
     console.log('xK = ' + xK.toString());
@@ -191,14 +192,14 @@ function stepEleven(_xk1) {
 
 function stepTwelve() {
     numberIteration++;
-    numberOfRegulationStrategy /= 2;
-    currentStepHtml += `<tr><th>Шаг 12</th><td><div>Делим мю на 2, мю = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`;
+    numberOfRegulationStrategy = numberOfRegulationStrategy / 2;
+    currentStepHtml += `<tr><th>Шаг 12</th><td><div>Условие выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; / 2, &#956; = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`;
     //к шагу 3
 }
 
 function stepThirteen() {
     numberOfRegulationStrategy *= 2;
-    currentStepHtml += `<tr><th>Шаг 13</th><td><div>Умножаем мю на 2, мю = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>Возвращаемся к шагу 7</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 13</th><td><div>Условие не выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; * 2, &#956; = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>Возвращаемся к шагу 7</div></td></tr>`;
     //к шагу 7
 }
 
@@ -206,7 +207,7 @@ function stepThirteen() {
 
 function fullRoot() {
     //вывод k итерации будет здесь
-    currentStepHtml = `<tr class="iter">k = ${numberIteration}</tr>`;
+    currentStepHtml = `<tr class="iter"><th colspan="2">k = ${numberIteration}</th></tr>`;
     stepThree();
     let str1 = stepFour();
     if (str1 === '<') {
@@ -227,7 +228,7 @@ function miniRoot() {
     stepEight();
     let dk = stepNine();
     let dk1 = stepTen(dk);
-    if (stepEleven(dk1) === '<') {
+    if (stepEleven(dk1) == '<') {
         stepTwelve();
         //
 
@@ -362,7 +363,7 @@ function getSignOfСomparison(a, b) {
     if (a > b) {
         return ">";
     }
-    if (a === b) {
+    if (a == b) {
         return "=";
     }
     if (a < b) {
