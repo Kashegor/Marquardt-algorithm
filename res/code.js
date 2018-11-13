@@ -14,7 +14,8 @@ let exprPolynomHtml = document.getElementById('expr'),
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
     numberIteration = 0,
-    numberOfRegulationStrategy = 1,
+    numberOfRegulationStrategy,
+    numberOfRegulationStrategyHtml = document.getElementById('strategy'),
     xK,
     stepsHtml = [];
 //Всё идёт сюда
@@ -28,17 +29,17 @@ doMainAction();
 
 function doMainAction() {
     preparation("x^2+2*y^2+10x*y^2+8x");
-    stepOne([1, 1], 0.1, 10);
+    stepOne([1, 1], 0.1, 10, 1);
     stepTwo();
     fullRoot();
     //////for (let i = 0; i < stepsHtml.length; i++) {
     //////    output.innerHTML += stepsHtml[i];
     //////}
-    output.innerHTML += stepsHtml[0];
-    output.innerHTML += stepsHtml[1];
-    output.innerHTML += stepsHtml[2];
-    output.innerHTML += stepsHtml[stepsHtml.length - 2];
-    output.innerHTML += stepsHtml[stepsHtml.length-1];
+    output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
+    output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
+    output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
+    output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
+    output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
     output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
 
 }
@@ -51,13 +52,15 @@ function preparation(expression) {
     setPretty(prettyHtml, expression);
 }
 
-function stepOne(x0, accur, m) {
+function stepOne(x0, accur, m, mu) {
     xZero[0].value = x0[0];
     xZero[1].value = x0[1];
     xK = [...x0];
     accuracy.value = accur;
     maxIters.value = m;
-    let calculatedGradient = new Gradient(variables[0], variables[1]);
+    numberOfRegulationStrategyHtml.value = mu;
+    numberOfRegulationStrategy = mu;
+        let calculatedGradient = new Gradient(variables[0], variables[1]);
     let matrixGessa = new Matrix(variables[0], variables[1]);
     setPretty(gradient1Html, calculatedGradient.gradientToString());
     setPretty(gesseHtml, matrixGessa.getMatrix());
@@ -106,7 +109,7 @@ function stepSix() {
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
-    setPrettyTr('Шаг 6', matrixGessa.getInPoint(), `$$Матрица Гессе:$$ H(x^${numberIteration}) = `, '');
+    setPrettyTr('Шаг 6', matrixGessa.getInPoint(), `Матрица Гессе: $$H(x^${numberIteration}) = `, '$$');
 }
 
 function stepSeven() {
@@ -120,7 +123,7 @@ function stepSeven() {
     let E = math.eye(2);
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
-    setPrettyTr('Шаг 7', ansver.toString(), `H(x^${numberIteration}) + μ^${numberIteration} * E =`, '');
+    setPrettyTr('Шаг 7', ansver.toString(), `$$H(x^${numberIteration}) + μ^${numberIteration} * E =`, '$$');
 }
 
 function stepEight() {
@@ -135,7 +138,7 @@ function stepEight() {
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
-    setPrettyTr('Шаг 8', math.format(math.inv(ansver),{notation: 'fixed', precision: 3}).toString(), `[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} =`, '');
+    setPrettyTr('Шаг 8', math.format(math.inv(ansver),{notation: 'fixed', precision: 3}).toString(), `$$[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} =`, '$$');
     //step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
 
@@ -154,7 +157,7 @@ function stepNine() {
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
     let dk = math.multiply(math.multiply(math.inv(ansver), -1), calculatedGradient.getGradientInPoint());
-    setPrettyTr('Шаг 9', math.format(dk,{notation: 'fixed', precision: 3}).toString(), `$$Направление спуска: $$[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} * ▽f(x^${numberIteration})=`, '');
+    setPrettyTr('Шаг 9', math.format(dk,{notation: 'fixed', precision: 3}).toString(), `Направление спуска: $$d^k=[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} * ▽f(x^${numberIteration})=`, '$$');
     return dk;
 }
 
@@ -168,7 +171,7 @@ function stepTen(_dk) {
         y: math.eval(xk.y + math.subset(_dk, math.index(1)))
     }
     //console.log(math.subset(_dk, math.index(0)));
-    setPrettyTr('Шаг 10', math.format(xk1.x,{notation: 'fixed', precision: 3}) + "; " + math.format(xk1.y,{notation: 'fixed', precision: 3}), 'x : ', '');
+    setPrettyTr('Шаг 10', math.format(xk1.x,{notation: 'fixed', precision: 3}) + "; " + math.format(xk1.y,{notation: 'fixed', precision: 3}), '$$x^{k+1}=x^k+d^k: ', '$$');
     return xk1;
 }
 
@@ -183,7 +186,7 @@ function stepEleven(_xk1) {
     let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk)
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
-    currentStepHtml += `<tr><th>Шаг 11</th><td><div>$$f(x^{k+1}) < f(x^k)$$ ${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 11</th><td><div>Проверка условия: $$f(x^{k+1}) < f(x^k)$$ $$ ${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}$$</div></td></tr>`;
     xK[0] = _xk1.x;
     xK[1] = _xk1.y;
     console.log('xK = ' + xK.toString());
@@ -268,7 +271,7 @@ function unique(arr) {
 function calulateDoubleDerivative(first, second) {
 
     let scope = {
-        func: exprPolynomHtml.value,
+        func: exprPolynomHtml.value.toString(),
         perOne: first,
         perTwo: second
     };
@@ -278,7 +281,7 @@ function calulateDoubleDerivative(first, second) {
 function calculateDerivative(perem) {
 
     let scope = {
-        func: exprPolynomHtml.value,
+        func: exprPolynomHtml.value.toString(),
         perem: perem,
     };
     return math.eval('derivative(func, perem)', scope);
@@ -341,7 +344,7 @@ function setPretty(element, value) {
 
 function setPrettyTr(name, value, messageBefore, messageAfter) {
     //element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
-    currentStepHtml += `<tr><th>${name}</th><td><div>$$ ${messageBefore} ${math.parse(value).toTex({parenthesis: parenthesis})} ${messageAfter} $$</div></td></tr>`;
+    currentStepHtml += `<tr><th>${name}</th><td><div>${messageBefore} ${math.parse(value).toTex({parenthesis: parenthesis})} ${messageAfter}</div></td></tr>`;
 }
 
 function pointToString(coordinates) {
@@ -367,7 +370,7 @@ function getSignOfСomparison(a, b) {
 
 //-------------------------------OUTPUT---------------------------------------
 
-exprPolynomHtml.oninput = function () {
+/*exprPolynomHtml.oninput = function () {
     let node = null;
 
     try {
@@ -393,7 +396,7 @@ exprPolynomHtml.oninput = function () {
     }
     catch (err) {
     }
-};
+};*/
 /*function calculateGrad(first, second) {
     let scope = {
         func: exprPolynomHtml.value,
