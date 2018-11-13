@@ -340,6 +340,12 @@ function setPretty(element, value) {
 
 function setPrettyTr(name, value, messageBefore, messageAfter) {
     //element.innerHTML = '$$' + math.parse(value).toTex({parenthesis: parenthesis}) + '$$';
+    if (messageBefore === undefined ) {
+        messageBefore = "";
+    }
+    if (messageAfter ===undefined) {
+        messageAfter = "";
+    }
     currentStepHtml += `<tr><th>${name}</th><td><div>$$ ${messageBefore} ${math.parse(value).toTex({parenthesis: parenthesis})} ${messageAfter} $$</div></td></tr>`;
 }
 
