@@ -16,9 +16,10 @@ let exprPolynomHtml = document.getElementById('expr'),
     numberIteration = 0,
     numberOfRegulationStrategy = 1,
     xK,
+    output,
     stepsHtml = [];
 //Всё идёт сюда
-output = document.getElementById('output');
+
 let currentStepHtml;
 doMainAction();
 //exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
@@ -34,13 +35,22 @@ function doMainAction() {
     //////for (let i = 0; i < stepsHtml.length; i++) {
     //////    output.innerHTML += stepsHtml[i];
     //////}
-    output.innerHTML += stepsHtml[0];
-    output.innerHTML += stepsHtml[1];
-    output.innerHTML += stepsHtml[2];
-    output.innerHTML += stepsHtml[stepsHtml.length - 2];
-    output.innerHTML += stepsHtml[stepsHtml.length-1];
+    
+    xZero[1].value = 10000;
+    output  = document.getElementById('output');
+    console.log(output);
+    addSteps(output,stepsHtml);
     output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
 
+}
+
+function addSteps(output, stepsHtmls)
+{
+    output.innerHTML += stepsHtmls[0];
+    output.innerHTML += stepsHtmls[1];
+    output.innerHTML += stepsHtmls[2];
+    output.innerHTML += stepsHtmls[stepsHtml.length - 2];
+    output.innerHTML += stepsHtmls[stepsHtml.length-1];
 }
 
 //---------------------------STEPS------------------------------
