@@ -28,7 +28,7 @@ doMainAction();
 //functions
 
 function doMainAction() {
-    preparation("x^2+2*y^2+10x*y^2+8x");
+    preparation("x^2-2*y^2-6x*y-5x+4");
     stepOne([1, 1], 0.1, 10, 1);
     stepTwo();
     fullRoot();
@@ -89,7 +89,7 @@ function stepFour() {
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
     let gradXk = calculatedGradient.getLength().toString();
-    let sign = getSignOfСomparison(gradXk, accuracy.value);
+    let sign = getSignOfСomparison(Number(gradXk), accuracy.value);
     currentStepHtml += `<tr><th>Шаг 4</th><td><div>|f(xk)| = ${gradXk}<br> Критерий останова : |▽f(xk)| ≤ ε <br>  ${gradXk} ${sign} ${accuracy.value}</div></td></tr>`;
     return sign;
 }
@@ -109,7 +109,7 @@ function stepSix() {
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
-    setPrettyTr('Шаг 6', matrixGessa.getInPoint(), `Матрица Гессе: $$H(x^${numberIteration}) = `, '$$');
+    setPrettyTr('Шаг 6', matrixGessa.getMatrix(), `Матрица Гессе: $$H(x^${numberIteration}) = `, '$$');
 }
 
 function stepSeven() {
@@ -319,8 +319,8 @@ function Matrix(first, second) {
 
     this.setPoint = function (_point) {
         let gradientInPointXX = math.format((math.eval(this.peremOne.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
-        let gradientInPointYY = math.format((math.eval(this.peremTwo.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
-        let gradientInPointXY = math.format((math.eval(this.peremThree.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
+        let gradientInPointYY = math.format((math.eval(this.peremThree.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
+        let gradientInPointXY = math.format((math.eval(this.peremTwo.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
         this.point = [[gradientInPointXX, gradientInPointXY], [gradientInPointXY, gradientInPointYY]];
     }
     this.getInPoint = function () {
