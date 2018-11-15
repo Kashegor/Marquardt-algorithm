@@ -16,7 +16,8 @@ let exprPolynomHtml = document.getElementById('expr'),
     numberIteration = 0,
     numberOfRegulationStrategy,
     numberOfRegulationStrategyHtml = document.getElementById('strategy'),
-    xK,
+    xK = [],
+    xKForTenStep = [];
     stepsHtml = [];
 //Всё идёт сюда
 output = document.getElementById('output');
@@ -38,6 +39,7 @@ function doMainAction() {
     output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
     output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
     output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
+    output.insertAdjacentHTML('beforeEnd', stepsHtml[3]);
     output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
     output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
     output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
@@ -56,6 +58,7 @@ function stepOne(x0, accur, m, mu) {
     xZero[0].value = x0[0];
     xZero[1].value = x0[1];
     xK = [...x0];
+    xKForTenStep = [...x0];
     accuracy.value = accur;
     maxIters.value = m;
     numberOfRegulationStrategyHtml.value = mu;
@@ -163,8 +166,8 @@ function stepNine() {
 
 function stepTen(_dk) {
     let xk = {
-        x: xK[0],
-        y: xK[1]
+        x: xKForTenStep[0],
+        y: xKForTenStep[1]
     }
     let xk1 = {
         x: math.eval(xk.x + math.subset(_dk, math.index(0))),
@@ -194,6 +197,7 @@ function stepEleven(_xk1) {
 function stepTwelve(_xk1) {
     xK[0] = _xk1.x;
     xK[1] = _xk1.y;
+    xKForTenStep = [...xK];
     console.log('xK = ' + xK.toString());
     numberIteration++;
     numberOfRegulationStrategy = numberOfRegulationStrategy / 2;
@@ -201,7 +205,9 @@ function stepTwelve(_xk1) {
     //к шагу 3
 }
 
-function stepThirteen() {
+function stepThirteen(_xk1) {
+    xKForTenStep[0] = _xk1.x;
+    xKForTenStep[1] = _xk1.y;
     numberOfRegulationStrategy *= 2;
     currentStepHtml += `<tr><th>Шаг 13</th><td><div>Условие не выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; * 2, &#956; = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>Возвращаемся к шагу 7</div></td></tr>`;
     //к шагу 7
@@ -210,7 +216,7 @@ function stepThirteen() {
 //------------------------------ROOTS-----------------------------------------
 
 function fullRoot() {
-    //вывод k итерации будет здесь
+    //вывод k итерации
     currentStepHtml = `<tr class="iter"><th colspan="2">k = ${numberIteration}</th></tr>`;
     stepThree();
     let str1 = stepFour();
@@ -231,16 +237,15 @@ function miniRoot() {
     stepSeven();
     stepEight();
     let dk = stepNine();
-    let dk1 = stepTen(dk);
-    if (stepEleven(dk1) == '<') {
-        stepTwelve(dk1);
-        //
-
+    //xK = [...xKForTenStep];
+    let xk = stepTen(dk);
+    if (stepEleven(xk) == '<') {
+        stepTwelve(xk);
         stepsHtml.push(currentStepHtml);
         //output.innerHTML += currentStepHtml;
         fullRoot();
     } else {
-        stepThirteen();
+        stepThirteen(xk);
         miniRoot();
     }
 
