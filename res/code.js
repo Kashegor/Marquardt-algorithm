@@ -29,7 +29,7 @@ doMainAction();
 //functions
 
 function doMainAction() {
-    preparation("x^2-2*y^2-6x*y-5x+4");
+    preparation("x^4+2*y^2+10x*y^2+8x");
     stepOne([1, 1], 0.1, 10, 1);
     stepTwo();
     fullRoot();
