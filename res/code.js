@@ -187,13 +187,14 @@ function stepEleven(_xk1) {
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
     currentStepHtml += `<tr><th>Шаг 11</th><td><div>Проверка условия: $$f(x^{k+1}) < f(x^k)$$ $$ ${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}$$</div></td></tr>`;
-    xK[0] = _xk1.x;
-    xK[1] = _xk1.y;
-    console.log('xK = ' + xK.toString());
+
     return sign;
 }
 
-function stepTwelve() {
+function stepTwelve(_xk1) {
+    xK[0] = _xk1.x;
+    xK[1] = _xk1.y;
+    console.log('xK = ' + xK.toString());
     numberIteration++;
     numberOfRegulationStrategy = numberOfRegulationStrategy / 2;
     currentStepHtml += `<tr><th>Шаг 12</th><td><div>Условие выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; / 2, &#956; = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`;
@@ -232,7 +233,7 @@ function miniRoot() {
     let dk = stepNine();
     let dk1 = stepTen(dk);
     if (stepEleven(dk1) == '<') {
-        stepTwelve();
+        stepTwelve(dk1);
         //
 
         stepsHtml.push(currentStepHtml);
