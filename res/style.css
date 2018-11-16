@@ -17,7 +17,7 @@ input[type=text] {
 }
 
 input.miniInput {
-    width: 30px;
+    width: 45px;
 }
 
 table {
@@ -28,6 +28,10 @@ table {
 .iter {
     width: 300px;
     padding: 20px;
+}
+.iter th {
+    column-span: 2;
+    background-color: dodgerblue;
 }
 
 table td, table th {
