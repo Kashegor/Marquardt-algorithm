@@ -31,8 +31,8 @@ doMainAction();
 //functions
 
 function doMainAction() {
-    preparation("x^4+2*y^2+10x*y^2+8x");
-    stepOne([1, 1], 0.1, 10, 1);
+    preparation("x^2+y^2-2x*y^2+x+10");
+    stepOne([1, 1], 0.05, 100, 1);
     stepTwo();
     fullRoot();
     //////for (let i = 0; i < stepsHtml.length; i++) {
@@ -42,6 +42,7 @@ function doMainAction() {
         if (stepsHtml.length >= 4) {
             output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
+            output.insertAdjacentHTML('beforeEnd','<tr><th colspan="2" align="center"><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1) ) + 1) + '.jpg width="640" height="360"></th></tr>');
             //output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
             //output.insertAdjacentHTML('beforeEnd', stepsHtml[3]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
@@ -75,7 +76,7 @@ function stepOne(x0, accur, m, mu) {
     maxIters.value = m;
     numberOfRegulationStrategyHtml.value = mu;
     numberOfRegulationStrategy = mu;
-        let calculatedGradient = new Gradient(variables[0], variables[1]);
+    let calculatedGradient = new Gradient(variables[0], variables[1]);
     let matrixGessa = new Matrix(variables[0], variables[1]);
     setPretty(gradient1Html, calculatedGradient.gradientToString());
     setPretty(gesseHtml, matrixGessa.getMatrix());
