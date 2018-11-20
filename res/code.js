@@ -25,28 +25,31 @@ let okHtml = document.getElementById('ok');
 //Всё идёт сюда
 output = document.getElementById('output');
 let currentStepHtml;
+
+exprPolynomHtml.value = 'x^2+y^2-2x*y^2+x+10';
+xZero[0].value = 0;
+xZero[1].value = 0;
+accuracy.value = 0.05;
+maxIters.value = 100;
+numberOfRegulationStrategyHtml.value = 1;
+
 doMainAction("x^2+y^2-2x*y^2+x+10");
-//exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
-//result.innerHTML = math.format(math.eval(exprPolynomHtml.value));
 
 //functions
 
 function doMainAction(expression) {
     preparation(expression);
-    stepOne([1, 1], 0.05, 100, 1);
+    stepOne();
     stepTwo();
     fullRoot();
     //////for (let i = 0; i < stepsHtml.length; i++) {
     //////    output.innerHTML += stepsHtml[i];
     //////}
     if (isEnd == true) {
-        if (stepsHtml.length >= 4) {
-            //output.insertAdjacentHTML('beforeEnd', '<div id="iterationsBody">');
+        if (stepsHtml.length > 4) {
             output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
             output.insertAdjacentHTML('beforeEnd', '<tr><th colspan="2" align="center">Пропустим несколько итераций в связи с их количеством.<br><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1)) + 1) + '.jpg width="640" height="360"></th></tr>');
-            //output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
-            //output.insertAdjacentHTML('beforeEnd', stepsHtml[3]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
             output.insertAdjacentHTML('beforeEnd', '</div>');
@@ -68,23 +71,19 @@ function doMainAction(expression) {
 //---------------------------STEPS------------------------------
 
 function preparation(expression) {
+    stepsHtml = [];
     countThirteenSteps = 0;
     numberIteration = 0;
     isEnd = true;
-    exprPolynomHtml.value = expression;
     variables = getVariablesFromPolynom(expression);
     setPretty(prettyHtml, expression);
 }
 
-function stepOne(x0, accur, m, mu) {
-    xZero[0].value = x0[0];
-    xZero[1].value = x0[1];
-    xK = [...x0];
-    xKForTenStep = [...x0];
-    accuracy.value = accur;
-    maxIters.value = m;
-    numberOfRegulationStrategyHtml.value = mu;
-    numberOfRegulationStrategy = mu;
+function stepOne() {
+    xK[0] = xZero[0].value;
+    xK[1] = xZero[1].value;
+    xKForTenStep = [...xK];
+    numberOfRegulationStrategy = numberOfRegulationStrategyHtml.value;
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     let matrixGessa = new Matrix(variables[0], variables[1]);
     setPretty(gradient1Html, calculatedGradient.gradientToString());
@@ -446,19 +445,24 @@ function restart() {
     for (let i = 0; i < nodesCount - 2; i++) {
         output.removeChild(output.childNodes[2]);
     }
-    document.getElementById('resultX').remove();
-    /*    try {
+    document.getElementById('resultX') ? document.getElementById('resultX').remove() : console.log('resultX = null');
+
+    let node = null;
+        try {
             // parse the expression
             node = math.parse(exprPolynomHtml.value);
 
             // evaluate the result of the expression
+            doMainAction(exprPolynomHtml.value);
+            MathJax.Hub.Typeset();
             //result.innerHTML = math.format(node.compile().eval());
         }
         catch (err) {
+            output.insertAdjacentHTML('beforeEnd', `<tr><th colspan="2" align="center"><span style="color: red;">${err.toString()}</span></th></tr>`);
             //result.innerHTML = '<span style="color: red;">' + err.toString() + '</span>';
             console.log('<span style="color: red;">' + err.toString() + '</span>');
-        }*/
-    doMainAction("x^2+y^2-2x*y^2+x+10");
+            MathJax.Hub.Typeset();
+        }
 }
 
 /*exprPolynomHtml.oninput = function () {
