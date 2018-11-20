@@ -8,30 +8,31 @@ let exprPolynomHtml = document.getElementById('expr'),
     outIteration = document.getElementById('iteration'),
     outRegulation = document.getElementById('regulation'),
     parenthesis = 'keep',
-    isEnd = true,
-    countThirteenSteps = 0,
+    isEnd,
+    countThirteenSteps,
     implicit = 'hide',
     variables,
     xZero = [document.getElementById('zeroX1'), document.getElementById('zeroX2')],
     accuracy = document.getElementById('accuracy'),
     maxIters = document.getElementById('maxIters'),
-    numberIteration = 0,
+    numberIteration,
     numberOfRegulationStrategy,
     numberOfRegulationStrategyHtml = document.getElementById('strategy'),
     xK = [],
     xKForTenStep = [];
-    stepsHtml = [];
+stepsHtml = [];
+let okHtml = document.getElementById('ok');
 //Всё идёт сюда
 output = document.getElementById('output');
 let currentStepHtml;
-doMainAction();
+doMainAction("x^2+y^2-2x*y^2+x+10");
 //exprPolypacknomHtml.value = 'sqrt(75 / 3) + det([[-1, 2], [3, 1]]) - sin(pi / 4)^2';
 //result.innerHTML = math.format(math.eval(exprPolynomHtml.value));
 
 //functions
 
-function doMainAction() {
-    preparation("x^2+y^2-2x*y^2+x+10");
+function doMainAction(expression) {
+    preparation(expression);
     stepOne([1, 1], 0.05, 100, 1);
     stepTwo();
     fullRoot();
@@ -40,21 +41,26 @@ function doMainAction() {
     //////}
     if (isEnd == true) {
         if (stepsHtml.length >= 4) {
+            //output.insertAdjacentHTML('beforeEnd', '<div id="iterationsBody">');
             output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
-            output.insertAdjacentHTML('beforeEnd','<tr><th colspan="2" align="center"><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1) ) + 1) + '.jpg width="640" height="360"></th></tr>');
+            output.insertAdjacentHTML('beforeEnd', '<tr><th colspan="2" align="center">Пропустим несколько итераций в связи с их количеством.<br><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1)) + 1) + '.jpg width="640" height="360"></th></tr>');
             //output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
             //output.insertAdjacentHTML('beforeEnd', stepsHtml[3]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
             output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
+            output.insertAdjacentHTML('beforeEnd', '</div>');
         } else {
             for (let i = 0; i < stepsHtml.length; i++) {
                 output.insertAdjacentHTML('beforeEnd', stepsHtml[i]);
             }
         }
-        output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
+        output.insertAdjacentHTML('afterEnd', `<br><div id="resultX">xK = ${math.format(xK, {
+            notation: 'fixed',
+            precision: 3
+        }).toString()}</div>`);
     } else {
-        output.insertAdjacentHTML('afterEnd', 'Минимум не найден');
+        output.insertAdjacentHTML('afterEnd', '<div id="resultX">Минимум не найден</div>');
     }
 
 }
@@ -62,6 +68,9 @@ function doMainAction() {
 //---------------------------STEPS------------------------------
 
 function preparation(expression) {
+    countThirteenSteps = 0;
+    numberIteration = 0;
+    isEnd = true;
     exprPolynomHtml.value = expression;
     variables = getVariablesFromPolynom(expression);
     setPretty(prettyHtml, expression);
@@ -125,7 +134,8 @@ function stepSix() {
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
-    setPrettyTr('Шаг 6', matrixGessa.getMatrix(), `Матрица Гессе: $$H(x^${numberIteration}) = `, '$$');
+    let ans = matrixGessa.getMatrix();
+    setPrettyTr('Шаг 6', matrixGessa.getInPoint(), `Матрица Гессе: $$H(x^{${numberIteration}}) = `, '$$');
 }
 
 function stepSeven() {
@@ -135,11 +145,10 @@ function stepSeven() {
     }
     let matrixGessa = new Matrix(variables[0], variables[1]);
     matrixGessa.setPoint(point);
-    console.log();
     let E = math.eye(2);
     E = math.multiply(E, numberOfRegulationStrategy);
-    let ansver = math.add(matrixGessa.point, E);
-    setPrettyTr('Шаг 7', ansver.toString(), `$$H(x^${numberIteration}) + μ^${numberIteration} * E =`, '$$');
+    let ansver = math.add(matrixGessa.point, E).toString();
+    setPrettyTr('Шаг 7', ansver, `$$H(x^{${numberIteration}}) + μ^{${numberIteration}} * E =`, '$$');
 }
 
 function stepEight() {
@@ -154,7 +163,10 @@ function stepEight() {
     E = math.multiply(E, numberOfRegulationStrategy);
     let ansver = math.add(matrixGessa.point, E);
 
-    setPrettyTr('Шаг 8', math.format(math.inv(ansver),{notation: 'fixed', precision: 3}).toString(), `$$[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} =`, '$$');
+    setPrettyTr('Шаг 8', math.format(math.inv(ansver), {
+        notation: 'fixed',
+        precision: 3
+    }).toString(), `$$[H(x^{${numberIteration}}) + μ^{${numberIteration}} * E]^{-1} =`, '$$');
     //step8Html.innerHTML += `Проверка : ${ansver.toString()} * ${math.inv(ansver).toString()} = ${math.multiply(ansver, math.inv(ansver)).toString()} `
 }
 
@@ -173,7 +185,10 @@ function stepNine() {
     let calculatedGradient = new Gradient(variables[0], variables[1]);
     calculatedGradient.setGradientInPoint(point);
     let dk = math.multiply(math.multiply(math.inv(ansver), -1), calculatedGradient.getGradientInPoint());
-    setPrettyTr('Шаг 9', math.format(dk,{notation: 'fixed', precision: 3}).toString(), `Направление спуска: $$d^k=[H(x^${numberIteration}) + μ^${numberIteration} * E]^{-1} * ▽f(x^${numberIteration})=`, '$$');
+    setPrettyTr('Шаг 9', math.format(dk, {
+        notation: 'fixed',
+        precision: 3
+    }).toString(), `Направление спуска: $$d^k=[H(x^{${numberIteration}}) + μ^{${numberIteration}} * E]^{-1} * ▽f(x^{${numberIteration}})=`, '$$');
     return dk;
 }
 
@@ -187,7 +202,10 @@ function stepTen(_dk) {
         y: math.eval(xk.y + math.subset(_dk, math.index(1)))
     }
     //console.log(math.subset(_dk, math.index(0)));
-    setPrettyTr('Шаг 10', math.format(xk1.x,{notation: 'fixed', precision: 3}) + "; " + math.format(xk1.y,{notation: 'fixed', precision: 3}), '$$x^{k+1}=x^k+d^k: ', '$$');
+    setPrettyTr('Шаг 10', math.format(xk1.x, {
+        notation: 'fixed',
+        precision: 3
+    }) + "; " + math.format(xk1.y, {notation: 'fixed', precision: 3}), '$$x^{k+1}=x^k+d^k: ', '$$');
     return xk1;
 }
 
@@ -204,7 +222,10 @@ function stepEleven(_xk1) {
     //isEnd = true;
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
-    currentStepHtml += `<tr><th>Шаг 11</th><td><div>Проверка условия: $$f(x^{k+1}) < f(x^k)$$ $$ ${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}$$</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 11</th><td><div>Проверка условия: $$f(x^{k+1}) < f(x^k)$$ $$ ${math.format(firstExpr, {
+        notation: 'fixed',
+        precision: 3
+    })} ${sign} ${math.format(secondExpr, {notation: 'fixed', precision: 3})}$$</div></td></tr>`;
 
     return sign;
 }
@@ -216,7 +237,10 @@ function stepTwelve(_xk1) {
     console.log('xK = ' + xK.toString());
     numberIteration++;
     numberOfRegulationStrategy = numberOfRegulationStrategy / 2;
-    currentStepHtml += `<tr><th>Шаг 12</th><td><div>Условие выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; / 2, &#956; = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 12</th><td><div>Условие выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; / 2, &#956; = ${math.format(numberOfRegulationStrategy, {
+        notation: 'fixed',
+        precision: 3
+    })}<br>k = k + 1, возвращаемся к шагу 3</div></td></tr>`;
     //к шагу 3
 }
 
@@ -224,7 +248,10 @@ function stepThirteen(_xk1) {
     xKForTenStep[0] = _xk1.x;
     xKForTenStep[1] = _xk1.y;
     numberOfRegulationStrategy *= 2;
-    currentStepHtml += `<tr><th>Шаг 13</th><td><div>Условие не выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; * 2, &#956; = ${math.format(numberOfRegulationStrategy,{notation: 'fixed', precision: 3})}<br>Возвращаемся к шагу 7</div></td></tr>`;
+    currentStepHtml += `<tr><th>Шаг 13</th><td><div>Условие не выполнилось. Приступаем к данному шагу.<br>&#956; = &#956; * 2, &#956; = ${math.format(numberOfRegulationStrategy, {
+        notation: 'fixed',
+        precision: 3
+    })}<br>Возвращаемся к шагу 7</div></td></tr>`;
     //к шагу 7
 }
 
@@ -326,15 +353,24 @@ function Gradient(_first, _second) {
         return '(' + this.first.toString() + ')*i+' + '(' + this.second.toString() + ')*j';
     }
     this.setGradientInPoint = function (_point) {
-        let gradientInPointX = math.format((math.eval(this.first.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
-        let gradientInPointY =  math.format((math.eval(this.second.toString(), _point)),{notation: 'fixed', precision: 2}).toString();
+        let gradientInPointX = math.format((math.eval(this.first.toString(), _point)), {
+            notation: 'fixed',
+            precision: 2
+        }).toString();
+        let gradientInPointY = math.format((math.eval(this.second.toString(), _point)), {
+            notation: 'fixed',
+            precision: 2
+        }).toString();
         this.point = [gradientInPointX, gradientInPointY];
     }
     this.getGradientInPoint = function () {
         return this.point;
     }
     this.getLength = function () {
-        return math.format(math.eval('sqrt(pow(' + this.point[0] + ',2)+pow(' + this.point[1] + ',2))'),{notation: 'fixed', precision: 2});
+        return math.format(math.eval('sqrt(pow(' + this.point[0] + ',2)+pow(' + this.point[1] + ',2))'), {
+            notation: 'fixed',
+            precision: 2
+        });
     }
 }
 
@@ -345,9 +381,18 @@ function Matrix(first, second) {
     this.point = [[1, 1], [1, 1]];
 
     this.setPoint = function (_point) {
-        let gradientInPointXX = math.format((math.eval(this.peremOne.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
-        let gradientInPointYY = math.format((math.eval(this.peremThree.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
-        let gradientInPointXY = math.format((math.eval(this.peremTwo.toString(), _point)), {notation: 'fixed', precision: 2}).toString();
+        let gradientInPointXX = math.format((math.eval(this.peremOne.toString(), _point)), {
+            notation: 'fixed',
+            precision: 2
+        }).toString();
+        let gradientInPointYY = math.format((math.eval(this.peremThree.toString(), _point)), {
+            notation: 'fixed',
+            precision: 2
+        }).toString();
+        let gradientInPointXY = math.format((math.eval(this.peremTwo.toString(), _point)), {
+            notation: 'fixed',
+            precision: 2
+        }).toString();
         this.point = [[gradientInPointXX, gradientInPointXY], [gradientInPointXY, gradientInPointYY]];
     }
     this.getInPoint = function () {
@@ -396,6 +441,25 @@ function getSignOfСomparison(a, b) {
 }
 
 //-------------------------------OUTPUT---------------------------------------
+function restart() {
+    let nodesCount = output.childNodes.length;
+    for (let i = 0; i < nodesCount - 2; i++) {
+        output.removeChild(output.childNodes[2]);
+    }
+    document.getElementById('resultX').remove();
+    /*    try {
+            // parse the expression
+            node = math.parse(exprPolynomHtml.value);
+
+            // evaluate the result of the expression
+            //result.innerHTML = math.format(node.compile().eval());
+        }
+        catch (err) {
+            //result.innerHTML = '<span style="color: red;">' + err.toString() + '</span>';
+            console.log('<span style="color: red;">' + err.toString() + '</span>');
+        }*/
+    doMainAction("x^2+y^2-2x*y^2+x+10");
+}
 
 /*exprPolynomHtml.oninput = function () {
     let node = null;

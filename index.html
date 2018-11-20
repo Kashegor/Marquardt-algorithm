@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Minecraft algorithm</title>
+    <title>Алгоритм Марквардта</title>
     <script src="dist/math.min.js"></script>
     <script type="text/javascript" async src="dist/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="res/code.js" defer></script>
@@ -12,7 +12,7 @@
 <section>
     <div class="container">
         <h1>
-            Майнкрафт по шагам
+            Алгоритм Марквардта по шагам
         </h1>
 
         <table id="output">
@@ -20,7 +20,7 @@
                 <th>f(x,y)=</th>
                 <td>
                     <input type="text" id="expr"/>
-                    <input type="button" value="Ok" id="ok"/>
+                    <input type="button" value="Ok" id="ok" onclick="restart()"/>
                     <br>Начиная из точки(<input type="text" class="miniInput" id="zeroX1"/>,<input type="text"
                                                                                                    class="miniInput"
                                                                                                    id="zeroX2"/>)
