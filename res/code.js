@@ -8,6 +8,8 @@ let exprPolynomHtml = document.getElementById('expr'),
     outIteration = document.getElementById('iteration'),
     outRegulation = document.getElementById('regulation'),
     parenthesis = 'keep',
+    isEnd = true,
+    countThirteenSteps = 0,
     implicit = 'hide',
     variables,
     xZero = [document.getElementById('zeroX1'), document.getElementById('zeroX2')],
@@ -30,19 +32,30 @@ doMainAction();
 
 function doMainAction() {
     preparation("x^2+y^2-2x*y^2+x+10");
-    stepOne([1, 1], 0.1, 10, 1);
+    stepOne([1, 1], 0.05, 100, 1);
     stepTwo();
     fullRoot();
     //////for (let i = 0; i < stepsHtml.length; i++) {
     //////    output.innerHTML += stepsHtml[i];
     //////}
-    output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
-    output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
-    output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
-    output.insertAdjacentHTML('beforeEnd', stepsHtml[3]);
-    output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
-    output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
-    output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
+    if (isEnd == true) {
+        if (stepsHtml.length >= 4) {
+            output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
+            output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
+            output.insertAdjacentHTML('beforeEnd','<tr><th colspan="2" align="center"><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1) ) + 1) + '.jpg width="640" height="360"></th></tr>');
+            //output.insertAdjacentHTML('beforeEnd', stepsHtml[2]);
+            //output.insertAdjacentHTML('beforeEnd', stepsHtml[3]);
+            output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
+            output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
+        } else {
+            for (let i = 0; i < stepsHtml.length; i++) {
+                output.insertAdjacentHTML('beforeEnd', stepsHtml[i]);
+            }
+        }
+        output.insertAdjacentHTML('afterEnd', `<br>xK = ${math.format(xK,{notation: 'fixed', precision: 3}).toString()}`);
+    } else {
+        output.insertAdjacentHTML('afterEnd', 'Минимум не найден');
+    }
 
 }
 
@@ -64,7 +77,7 @@ function stepOne(x0, accur, m, mu) {
     maxIters.value = m;
     numberOfRegulationStrategyHtml.value = mu;
     numberOfRegulationStrategy = mu;
-        let calculatedGradient = new Gradient(variables[0], variables[1]);
+    let calculatedGradient = new Gradient(variables[0], variables[1]);
     let matrixGessa = new Matrix(variables[0], variables[1]);
     setPretty(gradient1Html, calculatedGradient.gradientToString());
     setPretty(gesseHtml, matrixGessa.getMatrix());
@@ -187,7 +200,9 @@ function stepEleven(_xk1) {
     }
     let firstExpr = math.eval(exprPolynomHtml.value.toString(), _xk1);
     console.log(firstExpr);
-    let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk)
+    let secondExpr = math.eval(exprPolynomHtml.value.toString(), xk);
+    //if (Math.abs(firstExpr - secondExpr) >= 1)
+    //isEnd = true;
     let sign = getSignOfСomparison(firstExpr, secondExpr);
     //step11Html.innerHTML += '<br>' + firstExpr + " " + sign + " " + secondExpr;
     currentStepHtml += `<tr><th>Шаг 11</th><td><div>Проверка условия: $$f(x^{k+1}) < f(x^k)$$ $$ ${math.format(firstExpr,{notation: 'fixed', precision: 3})} ${sign} ${math.format(secondExpr,{notation: 'fixed', precision: 3})}$$</div></td></tr>`;
@@ -241,11 +256,17 @@ function miniRoot() {
     //xK = [...xKForTenStep];
     let xk = stepTen(dk);
     if (stepEleven(xk) == '<') {
+        countThirteenSteps = 0;
         stepTwelve(xk);
         stepsHtml.push(currentStepHtml);
         //output.innerHTML += currentStepHtml;
         fullRoot();
     } else {
+        if (countThirteenSteps > 10) {
+            isEnd = false;
+            return;
+        }
+        countThirteenSteps++;
         stepThirteen(xk);
         miniRoot();
     }
