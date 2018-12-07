@@ -33,39 +33,18 @@ accuracy.value = 0.05;
 maxIters.value = 100;
 numberOfRegulationStrategyHtml.value = 1;
 
-doMainAction("x^2+y^2-2x*y^2+x+10");
+
+MarquardAlgorithm("x^2+y^2-2x*y^2+x+10");
 
 //functions
 
-function doMainAction(expression) {
+function MarquardAlgorithm(expression) {
     preparation(expression);
     stepOne();
     stepTwo();
     fullRoot();
-    //////for (let i = 0; i < stepsHtml.length; i++) {
-    //////    output.innerHTML += stepsHtml[i];
-    //////}
-    if (isEnd == true) {
-        if (stepsHtml.length > 4) {
-            output.insertAdjacentHTML('beforeEnd', stepsHtml[0]);
-            output.insertAdjacentHTML('beforeEnd', stepsHtml[1]);
-            output.insertAdjacentHTML('beforeEnd', '<tr><th colspan="2" align="center">Пропустим несколько итераций в связи с их количеством.<br><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1)) + 1) + '.jpg width="640" height="360"></th></tr>');
-            output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 2]);
-            output.insertAdjacentHTML('beforeEnd', stepsHtml[stepsHtml.length - 1]);
-            output.insertAdjacentHTML('beforeEnd', '</div>');
-        } else {
-            for (let i = 0; i < stepsHtml.length; i++) {
-                output.insertAdjacentHTML('beforeEnd', stepsHtml[i]);
-            }
-        }
-        output.insertAdjacentHTML('afterEnd', `<br><div id="resultX">xK = ${math.format(xK, {
-            notation: 'fixed',
-            precision: 3
-        }).toString()}</div>`);
-    } else {
-        output.insertAdjacentHTML('afterEnd', '<div id="resultX">Минимум не найден</div>');
-    }
 
+    viewMarquardAlgorithm(stepsHtml, xK, isEnd ,output);
 }
 
 
@@ -439,7 +418,28 @@ function getSignOfСomparison(a, b) {
         return "<";
     }
 }
-
+function viewMarquardAlgorithm(stepsHtmlValue, xKValue, isEndValue, outputHtml){
+	if (isEndValue == true) {
+	        if (stepsHtmlValue.length > 4) {
+	            outputHtml.insertAdjacentHTML('beforeEnd', stepsHtmlValue[0]);
+	            outputHtml.insertAdjacentHTML('beforeEnd', stepsHtmlValue[1]);
+	            outputHtml.insertAdjacentHTML('beforeEnd', '<tr><th colspan="2" align="center">Пропустим несколько итераций в связи с их количеством.<br><img src=content/timeLater' + (Math.floor(Math.random() * (17 - 1 + 1)) + 1) + '.jpg width="640" height="360"></th></tr>');
+	            outputHtml.insertAdjacentHTML('beforeEnd', stepsHtmlValue[stepsHtmlValue.length - 2]);
+	            outputHtml.insertAdjacentHTML('beforeEnd', stepsHtmlValue[stepsHtmlValue.length - 1]);
+	            outputHtml.insertAdjacentHTML('beforeEnd', '</div>');
+	        } else {
+	            for (let i = 0; i < stepsHtmlValue.length; i++) {
+	                outputHtml.insertAdjacentHTML('beforeEnd', stepsHtmlValue[i]);
+	            }
+	        }
+	        outputHtml.insertAdjacentHTML('afterEnd', `<br><div id="resultX">xK = ${math.format(xKValue, {
+	            notation: 'fixed',
+	            precision: 3
+	        }).toString()}</div>`);
+	    } else {
+	        outputHtml.insertAdjacentHTML('afterEnd', '<div id="resultX">Минимум не найден</div>');
+	    }
+}
 //-------------------------------OUTPUT---------------------------------------
 function restart() {
     let nodesCount = output.childNodes.length;
@@ -454,7 +454,7 @@ function restart() {
             node = math.parse(exprPolynomHtml.value);
 
             // evaluate the result of the expression
-            doMainAction(exprPolynomHtml.value);
+            MarquardAlgorithm(exprPolynomHtml.value);
             MathJax.Hub.Typeset();
             //result.innerHTML = math.format(node.compile().eval());
         }
