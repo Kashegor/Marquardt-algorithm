@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>метод проекции градиента</title>
+    <script src="dist/math.min.js"></script>
+    <script type="text/javascript" async src="dist/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="res/codeGradient.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="res/style.css">
+    <link rel="SHORTCUT ICON" href="content/sword.png" type="image/x-icon">
+<body>
+<section>
+    <div class="container">
+        <h1>
+            Численные методы поиска условного экстремума (метод проекции градиента) по шагам
+        </h1>
+
+        <table id="output">
+            <tr>
+                <th>f(x,y)=</th>
+                <td>
+
+                    F(X) = <input type="text" id="expr"/> 
+                    <br>
+                    G1  <input type="text" id="g1Expr"/> = <input type="text" id="g1Value"/>
+                    <br>
+                    G2  <input type="text" id="g2Expr"/> = <input type="text" id="g2Value"/>
+                    <br>
+                    <input type="button" value="Ok" id="ok" onclick="restart()"/>
+                    <br>
+                    Начиная из точки(
+                    <input type="text" class="miniInput" id="zeroX1"/>,
+                    <input type="text" class="miniInput"id="zeroX2"/>
+                    )
+                    <br>
+                    Точность ξ =<input type="text" class="miniInput" id="accuracy"/>Максимальное число итераций
+
+                    M=<input type="text"class="miniInput"id="maxIters"/>
+
+                    <br>
+                    <img src="content/magicStaff.svg" width="100" height="100">
+
+                </td>
+
+            </tr>
+            <tr>
+                <th>Ваша функция</th>
+                <td>
+                    F(X) = <div id="prettyFx">$$$$</div>
+                    <br>
+                    G1 <div id="prettyG1">$$$$</div>
+                </td>
+            </tr>
+            
+        </table>
+
+        <!--<b>Parenthesis option:</b>
+        <input type="radio" name="parenthesis" value="keep" onclick="parenthesis = 'keep'; expr.oninput();" checked>keep
+        <input type="radio" name="parenthesis" value="auto" onclick="parenthesis = 'auto'; expr.oninput();">auto
+        <input type="radio" name="parenthesis" value="all" onclick="parenthesis = 'all'; expr.oninput();">all
+        <br/>
+        <b>Implicit multiplication:</b>
+        <input type="radio" name="implicit" value="hide" onclick="implicit = 'hide'; expr.oninput();" checked>hide
+        <input type="radio" name="implicit" value="show" onclick="implicit = 'show'; expr.oninput();">show-->
+        <div align="left"><img src="content/Chel.svg" width="200" height="200"></div>
+    </div>
+</section>
+</body>
+</html>
