@@ -103,9 +103,8 @@ function stepSix(dataForGradientAlg,algResult){
     algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 6", `${sigma2Xk.toString()}`,'');
 }
 function stepSeven(dataForGradientAlg,algResult){
-    
-    dataForGradientAlg.sigma2Xk = sigma2Xk;
-    evcideNorm = evclideNorm(sigma2Xk);
+
+    evcideNorm = evclideNorm(dataForGradientAlg.sigma2Xk);
     dataForGradientAlg.evcideNormSigma2Xk = evclideNorm;
     algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 7", `${evcideNorm.toString()}`,'');
 }
@@ -142,14 +141,66 @@ function stepNine(dataForGradientAlg,algResult){
 
     console.log(Multiplyed_by_g_and_transporend_g);
     deltaXk = math.multiply(math.multiply(math.add(math.identity(g.length),math.multiply(Multiplyed_by_g_and_transporend_g,-1)),-1),math.transpose(dataForGradientAlg.gradientFx.getGradientInPoint()));
-  
+    dataForGradientAlg.deltaXk = deltaXk;
     algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 9", `${deltaXk.toString()}`,'');
 }
 function stepTen(dataForGradientAlg,algResult){
-    
-    
+    let evclideNormDeltaXk = evclideNorm(dataForGradientAlg.deltaXk);
+    let evclideNormSigma2Xk = dataForGradientAlg.evcideNormSigma2Xk;
+    let accuracy = dataForGradientAlg.accuracy;
 
+    if (evclideNormDeltaXk <= accuracy && evclideNormSigma2Xk <= accuracy) {
+        //рассчитать по ф-ле 10.8 вектор множителей Лагранжа для проверки достаточных условий в точке экстемума
+        //впрочем находить эти достаточные условия я бы оставил на плечи юзеров
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} ≤ ${accuracy} и
+${evclideNormSigma2Xk} ≤ ${accuracy}<br>Расчет окончен`,'');
+        return 0;
+    } else if (evclideNormDeltaXk > accuracy && evclideNormSigma2Xk <= accuracy) {
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} > ${accuracy} и
+${evclideNormSigma2Xk} ≤ ${accuracy}<br>δ2xk = 0, переходим к шагу 11`,'');
+        dataForGradientAlg.sigma2Xk = 0;
+        return 11;
+    } else if (evclideNormDeltaXk <= accuracy && evclideNormSigma2Xk > accuracy) {
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} ≤ ${accuracy} и
+${evclideNormSigma2Xk} > ${accuracy}<br>Δxk = 0, переходим к шагу 13`,'');
+        dataForGradientAlg.deltaXk = 0;
+        return 13;
+    } else {
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} > ${accuracy} и
+${evclideNormSigma2Xk} > ${accuracy}<br>переходим к шагу 11`,'');
+        return 11;
+    }
     //algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 10", `${gradient.getGradientInPoint()}`,'');
+}
+
+function stepEleven(dataForGradientAlg,algResult) {
+    //тут нада xk в матрицу превратить, сложна
+    let resPoint = math.eval(`${dataForGradientAlg.xk} + tk *
+    ${dataForGradientAlg.deltaXk}`).toString();
+    setPrettyTr("Шаг 11", `Получим точку xk + t*kΔxk<br>${resPoint}`,'');
+}
+//рвзработка
+//тут надо спиздить значения точки из матрицы и считать функцию много раз, я запуталсо с матрицами в говно
+function stepTwelwe(dataForGradientAlg,algResult) {
+    let result = Number.MAX_SAFE_INTEGER;
+    let resultTk;
+    for (let tk = 0; tzero <= 1; tk+=0.01) {
+
+        let point = {
+            [dataForGradientAlg.variablesFx[0]]: dataForGradientAlg.xk[0],
+            [dataForGradientAlg.variablesFx[1]]: dataForGradientAlg.xk[1]
+        }
+
+        //let currentResult = math.eval(`${dataForGradientAlg.xk}+${tk}*(${dataForGradientAlg.deltaXk})`)[0];
+        if (result < currentResult) {
+            result = currentResult;
+            resultTk = tk;
+        }
+    }
 }
 
 //------------------------------ROOTS-----------------------------------------
@@ -287,7 +338,7 @@ function Gradient(_first, _second,exprPolynomHtml) {
             notation: 'fixed',
             precision: 2
         });
-        this.point = [parseInt(gradientInPointX), parseInt(gradientInPointY)];
+        this.point = [+gradientInPointX, +gradientInPointY];
     }
     this.getGradientInPoint = function () {
         return this.point;
