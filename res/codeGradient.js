@@ -15,12 +15,12 @@ let exprPolynomHtml = document.getElementById('expr'),
 
 //Code initialization
 
-prettyFxHtml.value = '(x-4)^2+(y-5)^2';
+prettyFxHtml.value = '(x1-4)^2+(y-5)^2';
 xZero[0].value = 0;
 xZero[1].value = 0;
 accuracy.value = 0;
 maxIters.value = 5;
-g1Expr.value = 'x+y-1';
+g1Expr.value = 'x1+y-1';
 //g2Expr.value = 'x1+x2-1';
 //g2Value.value = 0;
 
@@ -128,13 +128,9 @@ function stepNine(dataForGradientAlg,algResult){
     AT_multipl_By_A_Inversed = math.inv(math.multiply(g,math.transpose(g)));
 
     //----------------In progress
-    let a = [
-        [0.5],
-        [0.5]
-    ];
-    a_transporent = [1,1];
-    console.log(a);
-    console.log(math.transpose(a));
+    let a = [  [0.5] , [0.5] ];
+    arr = [1,1];
+    console.log(math.transpose(arr));
     console.log(math.multiply(a,math.transpose(a)));
     console.log(math.transpose(g));
     console.log(math.multiply(AT_multipl_By_A_Inversed,math.transpose(g)));
