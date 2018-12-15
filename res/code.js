@@ -267,7 +267,7 @@ function miniRoot() {
         //output.innerHTML += currentStepHtml;
         fullRoot();
     } else {
-        if (countThirteenSteps > 10) {
+        if (countThirteenSteps > 25) {
             isEnd = false;
             return;
         }
@@ -302,7 +302,6 @@ function unique(arr) {
 }
 
 function calulateDoubleDerivative(first, second) {
-
     let scope = {
         func: exprPolynomHtml.value.toString(),
         perOne: first,
