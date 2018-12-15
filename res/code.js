@@ -270,7 +270,6 @@ function miniRoot() {
         if (countThirteenSteps > 25) {
             isEnd = false;
             return;
-            math.()
         }
         countThirteenSteps++;
         stepThirteen(xk);
