@@ -98,15 +98,16 @@ function stepFive(dataForGradientAlg,algResult){
 function stepSix(dataForGradientAlg,algResult){
     let gradientInPoint =dataForGradientAlg.gradientG1.getGradientInPoint();
     //------------------------------------------------------------------------------тут я быренько забахал может вызвать проблемесы-----------------------------------
-    sigma2Xk = math.multiply(math.multiply(math.transpose(gradientInPoint),math.inv(math.multiply(gradientInPoint,math.transpose(gradientInPoint)))),dataForGradientAlg.tk);
+    inversed = math.inv(math.multiply(gradientInPoint,math.transpose(gradientInPoint)));
+    sigma2Xk = math.multiply(math.multiply(math.transpose(gradientInPoint),inversed),dataForGradientAlg.tk);
     dataForGradientAlg.sigma2Xk = sigma2Xk;
     algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 6", `${sigma2Xk.toString()}`,'');
 }
 function stepSeven(dataForGradientAlg,algResult){
 
-    evcideNorm = evclideNorm(dataForGradientAlg.sigma2Xk);
-    dataForGradientAlg.evcideNormSigma2Xk = evclideNorm;
-    algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 7", `${evcideNorm.toString()}`,'');
+    evcideNormnum = evclideNorm(dataForGradientAlg.sigma2Xk);
+    dataForGradientAlg.evcideNormSigma2Xk = evcideNormnum;
+    algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 7", `${evcideNormnum.toString()}`,'');
 }
 function stepEight(dataForGradientAlg,algResult){
     
@@ -119,53 +120,60 @@ function stepEight(dataForGradientAlg,algResult){
     algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 8", `${gradient.getGradientInPoint()}`,'');
 }
 function stepNine(dataForGradientAlg,algResult){
-    let g = dataForGradientAlg.gradientG1.getGradientInPoint();
-    console.log(g);
-    //----------------------------------------------------Сука она не работает на одномерные массивы а я ебался 100 лет над этой хуйнёй аааааааааааааааааааа
-    console.log(math.transpose(g));
-    //----------------Вроде правильна
-    AT_multipl_By_A_Inversed = math.inv(math.multiply(g,math.transpose(g)));
+    let g = jsArrayToMathJsArrayTransponsed(dataForGradientAlg.gradientG1.getGradientInPoint());
+    //                      Так транспониреут       1 
+    //                                        [     1      ] = [1 1 1]
+    //                                              1
+    //                      А так не хочет                       1   
+    //                                        [  1  1  1   ] = [ 1 ]
+    //                                                           1       
+    //
+    //Теерь правильна
+    AT_multipl_By_A_Inversed = math.inv(math.multiply(math.transpose(g),g));
 
-    //----------------In progress
-    let a = [  [0.5] , [0.5] ];
-    arr = [1,1];
-    console.log(math.transpose(arr));
-    console.log(math.multiply(a,math.transpose(a)));
-    console.log(math.transpose(g));
-    console.log(math.multiply(AT_multipl_By_A_Inversed,math.transpose(g)));
-    Multiplyed_by_g_and_transporend_g =math.multiply(math.multiply(AT_multipl_By_A_Inversed,math.transpose(g)),g);
-
+    //Тож пральна
+    Multiplyed_by_g_and_transporend_g =math.multiply( math.multiply( g , AT_multipl_By_A_Inversed),math.transpose(g));
     console.log(Multiplyed_by_g_and_transporend_g);
-    deltaXk = math.multiply(math.multiply(math.add(math.identity(g.length),math.multiply(Multiplyed_by_g_and_transporend_g,-1)),-1),math.transpose(dataForGradientAlg.gradientFx.getGradientInPoint()));
+
+    //right
+    Minus_identity_matrix = math.add(math.identity(math.transpose(g)[0].length),math.multiply(Multiplyed_by_g_and_transporend_g,-1));
+    console.log(math.identity(math.transpose(g)[0].length).toString());
+    console.log(Minus_identity_matrix);
+
+    //right
+    deltaXk = math.multiply(math.multiply(-1,Minus_identity_matrix),jsArrayToMathJsArrayTransponsed(dataForGradientAlg.gradientFx.getGradientInPoint()));
+    console.log(deltaXk)
+
+
     dataForGradientAlg.deltaXk = deltaXk;
-    algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 9", `${deltaXk.toString()}`,'');
+    algResult.stepsHtml[dataForGradientAlg.numderOfIteration]+= setPrettyTr("Шаг 9", `${setPretty(deltaXk.toString())}`,'');
 }
+
 function stepTen(dataForGradientAlg,algResult){
     let evclideNormDeltaXk = evclideNorm(dataForGradientAlg.deltaXk);
     let evclideNormSigma2Xk = dataForGradientAlg.evcideNormSigma2Xk;
     let accuracy = dataForGradientAlg.accuracy;
-
     if (evclideNormDeltaXk <= accuracy && evclideNormSigma2Xk <= accuracy) {
         //рассчитать по ф-ле 10.8 вектор множителей Лагранжа для проверки достаточных условий в точке экстемума
         //впрочем находить эти достаточные условия я бы оставил на плечи юзеров
-        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] +=
         setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} ≤ ${accuracy} и
 ${evclideNormSigma2Xk} ≤ ${accuracy}<br>Расчет окончен`,'');
         return 0;
     } else if (evclideNormDeltaXk > accuracy && evclideNormSigma2Xk <= accuracy) {
-        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] +=
         setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} > ${accuracy} и
 ${evclideNormSigma2Xk} ≤ ${accuracy}<br>δ2xk = 0, переходим к шагу 11`,'');
         dataForGradientAlg.sigma2Xk = 0;
         return 11;
     } else if (evclideNormDeltaXk <= accuracy && evclideNormSigma2Xk > accuracy) {
-        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] +=
         setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} ≤ ${accuracy} и
 ${evclideNormSigma2Xk} > ${accuracy}<br>Δxk = 0, переходим к шагу 13`,'');
         dataForGradientAlg.deltaXk = 0;
         return 13;
     } else {
-        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] =
+        algResult.stepsHtml[dataForGradientAlg.numderOfIteration] +=
         setPrettyTr("Шаг 10", `Проверим ||Δxk||≤e и ||δ2xk||≤e<br>${evclideNormDeltaXk} > ${accuracy} и
 ${evclideNormSigma2Xk} > ${accuracy}<br>переходим к шагу 11`,'');
         return 11;
@@ -177,6 +185,7 @@ function stepEleven(dataForGradientAlg,algResult) {
     //тут нада xk в матрицу превратить, сложна
     let resPoint = math.eval(`${dataForGradientAlg.xk} + tk *
     ${dataForGradientAlg.deltaXk}`).toString();
+    algResult.stepsHtml[dataForGradientAlg.numderOfIteration] +=
     setPrettyTr("Шаг 11", `Получим точку xk + t*kΔxk<br>${resPoint}`,'');
 }
 //рвзработка
@@ -224,6 +233,24 @@ function mainRoot(dataForGradientAlg, algResult){
 
 
 //--------------------------CALCULATIONS-------------------------------------
+
+    /*
+                было [1,1,1]
+
+                Стало [Array(),Array(),Array()] и у каждого 1 элемент еденица
+                Так масДжс понимает как с этим работать
+    */
+function jsArrayToMathJsArrayTransponsed(jsArray){
+    let mathJsArray = new Array();
+    for (let i = 0; i < jsArray.length; i++) {
+        const element = jsArray[i];
+        let elementArray =  new Array();
+        elementArray.push(element);
+        mathJsArray.push(elementArray);
+    }
+
+    return mathJsArray;
+}
 function evclideNorm(arr) {
     let newArr = math.clone(arr);
     for (let i = 0; i < newArr.length; i++) {
